@@ -1,9 +1,8 @@
-# AI 姿势库 (ai-pose-gallery-zh) 接入 AI 换装/生图后端开发任务书 (AI Studio Integration Spec)
+# 拍片哥 · AI 姿势库与生图工坊开发任务书 (Paipiange Pose AI Studio Integration Spec)
 
 > **面向执行 Agent（Claude Code / OpenCode / Codex / Cursor）的标准化执行规范**  
-> 目标仓库：`D:\code\code_ai\ai-pose-gallery-zh`  
-> 资源源仓库：`D:\code\code_ai\nvzhuang`（服装库与换装后端）  
-> 核心任务：将 `nvzhuang/backend` 的多模型图像生成/换装服务移植到 `ai-pose-gallery-zh`，并对其前端 (`index.html`) 进行交互打通，打造「以姿势为骨架、以服装为血肉」的 **AI 姿势生图与试穿工坊 (Pose AI Studio)**。
+> 目标仓库：`https://github.com/paipiange/ai-pose-gallery-zh`  
+> 核心任务：打造「以姿势为骨架、以服装为血肉」的 **拍片哥 AI 姿势生图与试穿工坊 (Paipiange Pose AI Studio)**。
 
 ---
 

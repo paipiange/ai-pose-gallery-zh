@@ -1,6 +1,6 @@
-# AI Pose Gallery · 中文版
+# 拍片哥 · AI 姿势参考库与生图工坊 (AI Pose Gallery & Studio)
 
-> 288 组 / 1439 张 AI 人体姿势参考图，日文数据完整汉化，附可直接部署的响应式静态画廊。
+> 288 组 / 1439 张 AI 人体姿势参考图，日文数据完整汉化，全新集成本地与多云端 **拍片哥 AI 姿势生图与试穿工坊**，附可直接部署的响应式画廊。
 
 ![画廊预览](docs/preview.jpg)
 
@@ -10,21 +10,32 @@
 
 </details>
 
-**在线演示：** <https://ai-pose-gallery.anhao.app/>
+**维护者：** 拍片哥 · [GitHub @paipiange](https://github.com/paipiange)
+**GitHub 仓库：** <https://github.com/paipiange/ai-pose-gallery-zh>
+**原始数据作者：** ギア（@giaaibusi）
 **原始站点：** <https://ai-pose-gallery.pages.dev/>
-**原作者：** ギア（@giaaibusi）
-**中文版维护：** Anhao · [X @anhao_ai](https://x.com/anhao_ai)
-**GitHub：** <https://github.com/anhao/ai-pose-gallery-zh>
+**原版汉化致谢：** Anhao · [X @anhao_ai](https://x.com/anhao_ai) / [anhao/ai-pose-gallery-zh](https://github.com/anhao/ai-pose-gallery-zh)
 
 ---
 
 ## 这是什么
 
-原站是一套面向 AI 绘画 / 3D / 摄影参考的姿势图库，元数据全部为日文，且不提供批量素材下载。本仓库做了三件事：
+原站是一套面向 AI 绘画 / 3D / 摄影参考的姿势图库，元数据全部为日文，且不提供批量素材下载。本仓库不仅完成了全量数据镜像与汉化，更全面升级研发了 **拍片哥 AI 姿势生图与试穿工坊**：
 
-1. **全量镜像** —— 1439 条记录对应的 1439 张缩略图（JPG 300×400）与 1439 张原图（PNG 900×1200）全部落地，共 2878 个文件 / 659.5 MB。
-2. **完整汉化** —— 日文字段逐条译为中文，覆盖 4 个体系、26 个分类、288 个姿势名、5 个视角，零遗漏。
-3. **可用的前端** —— 零依赖响应式画廊，完整实现原站的分类筛选、多角度切换、分组浏览、灯箱导航与原图下载，并针对手机重新设计布局。
+1. **全量镜像与汉化** —— 1439 条记录对应的缩略图与原图全部落地（共 2878 个文件 / 659.5 MB），4 个体系、26 个动作分类、288 个姿势名全部准确汉化。
+2. **轻量原生画廊** —— 零框架依赖的高性能响应式画廊，支持多角度切换、按姿势分组与原图下载。
+3. **拍片哥 AI 姿势生图工坊** —— 以 3D 白模为骨架，支持真实服装融合试穿、人脸局部头像面容复刻，打通 ComfyUI 本地工作流与主流云端模型。
+
+## ✨ 拍片哥 AI 姿势生图与试穿工坊 (Pose AI Studio)
+
+- **姿势骨架精准对齐**：选中任意姿势和拍摄视角，自动抽取人体素体并精准锁定动作构图。
+- **真实面料试穿**：支持上传真实服装图或选用精选预置款式，根据人体受力自动模拟布料褶皱与垂坠光影。
+- **人脸定制复刻**：支持拖拽或直接 `Ctrl + V` 粘贴人脸特写头像（门槛放宽至 32×32 局部特写），一键复刻神韵面容。
+- **多模型灵活切换**：
+  - **本地首选**：支持直连 ComfyUI 官方固定工作流（支持 `Qwen-Image-Edit-2511` 动态多图融合）。
+  - **云端大模型**：内置 Google Gemini 3.1、字节火山方舟豆包视觉模型、OpenAI GPT-Image 等。
+- **纯原生零泄露架构**：零打包、零构建工具，用户私有 Key 仅在浏览器本地 `localStorage` 留存，单次请求内存临时代理，绝不持久化落盘。
+- **本地历史存储**：生成结果自动保存在浏览器本地 IndexedDB，支持单条导出超清大图、复用生成 Prompt 与本地历史清空。
 
 ## 页面功能
 
@@ -50,7 +61,7 @@
 - `robots.txt` 放行全站并声明 sitemap，`sitemap.xml` 指向首页
 - 语义结构：单一 H1、分区 H2、卡片 H3；缩略图 `alt` 含姿势名与视角，图片懒加载
 
-仓库中的绝对地址统一指向 `https://ai-pose-gallery.anhao.app/`。Fork 后如使用其他域名，需同步替换 `index.html` 的 canonical、`og:*`、`twitter:*`、JSON-LD，以及 `robots.txt`、`sitemap.xml` 中的地址。
+仓库中的项目地址统一指向 `https://github.com/paipiange/ai-pose-gallery-zh`。Fork 后如使用其他域名，需同步替换 `index.html` 的 canonical、`og:*`、`twitter:*`、JSON-LD，以及 `robots.txt`、`sitemap.xml` 中的地址。
 
 ## 数据规模
 
@@ -78,6 +89,12 @@
 │   ├── meta.json           # 原始体系分类
 │   ├── meta-zh.json        # 中文体系分类
 │   └── translations.csv    # 日⇄中对照表（323 条，便于校对）
+├── backend/                # 拍片哥 AI 生图/换装高性能后端 (GoFrame v2)
+│   ├── api/                # API 契约与接口结构
+│   ├── internal/           # 控制器、多模型生图逻辑、安全流控
+│   └── manifest/           # 配置文件与环境定义
+├── presets/                # 生图工坊预置款式（女装/面料）
+├── skills/                 # Agent 技能定义包 (Claude / OpenCode / Cursor)
 ├── thumbs/                 # 缩略图 1439 张 JPG 300×400（22 MB）
 ├── img/                    # 原图 1439 张 PNG 900×1200（637 MB）
 ├── scripts/
@@ -110,14 +127,24 @@
 
 原始日文数据 `data/pose.json` 保持原样，字段名与站点接口一致，便于对照或回灌。
 
-## 本地预览
+## 本地运行
 
-画廊通过 `fetch` 读取 JSON，需要 HTTP 环境（直接双击 `index.html` 会被 CORS 拦截）：
+### 1. 启动前端画廊
+画廊通过 `fetch` 读取 JSON，需要静态 HTTP 环境：
 
 ```bash
-python3 -m http.server 8000
-# 打开 http://127.0.0.1:8000
+# 在仓库根目录运行
+python3 -m http.server 5500
+# 浏览器打开 http://127.0.0.1:5500
 ```
+
+### 2. 启动拍片哥 AI 生图后端（可选，生图工坊需要）
+```bash
+cd backend
+go run main.go
+# 默认监听 http://127.0.0.1:8000
+```
+启动后在前端画廊点击右上角 **「🎨 拍片哥 AI 工坊」** 即可体验一键姿势生图与试穿！
 
 页面支持体系/分类/视角组合筛选、关键词搜索、分组与逐张浏览、多角度缩略图、懒加载、灯箱原图下载、键盘与触屏导航。
 
@@ -189,7 +216,7 @@ npx wrangler pages deploy dist --project-name ai-pose-gallery-zh
 技能通过相对路径读取仓库的 `img/`，所以要**保留整个仓库**，再把技能目录**软链**（不要复制）到 Agent 的技能目录。以 Claude Code 为例（个人技能目录 `~/.claude/skills/`，项目级为 `<项目>/.claude/skills/`）：
 
 ```bash
-git clone --depth 1 https://github.com/anhao/ai-pose-gallery-zh.git ~/ai-pose-gallery-zh
+git clone --depth 1 https://github.com/paipiange/ai-pose-gallery-zh.git ~/ai-pose-gallery-zh
 mkdir -p ~/.claude/skills
 ln -s ~/ai-pose-gallery-zh/skills/pose-reference-standard ~/.claude/skills/pose-reference-standard
 # 需要全部技能：for d in ~/ai-pose-gallery-zh/skills/pose-reference-*; do ln -s "$d" ~/.claude/skills/; done
@@ -204,7 +231,7 @@ ln -s ~/ai-pose-gallery-zh/skills/pose-reference-standard ~/.claude/skills/pose-
 把下面这段话发给 Claude Code（或其他能执行命令的 Agent），按需改技能名：
 
 ```text
-请帮我安装姿势参考技能：把 https://github.com/anhao/ai-pose-gallery-zh 浅克隆到 ~/ai-pose-gallery-zh
+请帮我安装姿势参考技能：把 https://github.com/paipiange/ai-pose-gallery-zh 浅克隆到 ~/ai-pose-gallery-zh
 （需要完整仓库，技能会用相对路径读取仓库里的 img/），然后把 skills/pose-reference-standard
 软链到 ~/.claude/skills/pose-reference-standard（不要复制）。完成后检查
 references/catalog.csv 里每一行的「图片」路径相对技能目录都能找到文件，告诉我总行数和缺失数。
