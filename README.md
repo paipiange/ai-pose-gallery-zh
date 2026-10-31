@@ -138,9 +138,29 @@
 
 原始日文数据 `data/pose.json` 保持原样，字段名与站点接口一致，便于对照或回灌。
 
-## 本地运行
+## 一键部署与运行
 
-### 1. 启动前端画廊
+### 方式 A：Docker Compose 一键部署（首选推荐）
+
+仓库已内置完整的 **前端 Nginx 静态托管 + 后端 GoFrame 生图引擎** 全栈编排：
+
+```bash
+# 1. 复制环境变量文件（可选配置 API Key）
+cp .env.example .env
+
+# 2. 一键构建并启动前后端全栈容器
+docker compose up -d --build
+```
+启动后直接在浏览器访问：
+- **Web 前端画廊与工坊**：`http://localhost:8080`
+- **后端 API 与文档**：`http://localhost:8000/swagger`
+- 详见 [Docker 详细部署指南](DOCKER.md)。
+
+---
+
+### 方式 B：本地手动运行
+
+#### 1. 启动前端画廊
 画廊通过 `fetch` 读取 JSON，需要静态 HTTP 环境：
 
 ```bash
@@ -149,7 +169,7 @@ python3 -m http.server 5500
 # 浏览器打开 http://127.0.0.1:5500
 ```
 
-### 2. 启动拍片哥 AI 生图后端（可选，生图工坊需要）
+#### 2. 启动拍片哥 AI 生图后端（生图工坊需要）
 ```bash
 cd backend
 go run main.go

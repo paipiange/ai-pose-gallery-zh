@@ -1,0 +1,50 @@
+services:
+  # 拍片哥 AI 后端服务（GoFrame 高性能姿势渲染与换装引擎）
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ai-pose-backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - GF_SERVER_ADDRESS=:8000
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ARK_API_KEY=${ARK_API_KEY:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - DASHSCOPE_API_KEY=${DASHSCOPE_API_KEY:-}
+      - COMFYUI_HOST=${COMFYUI_HOST:-host.docker.internal}
+      - COMFYUI_PORT=${COMFYUI_PORT:-8188}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:8000/hello || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      - pose-net
+
+  # 拍片哥 AI 前端服务（Nginx 静态托管与全功能反向代理）
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    container_name: ai-pose-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - pose-net
+
+networks:
+  pose-net:
+    driver: bridge

@@ -31,5 +31,9 @@ backend/main.exe
 backend/bin/
 backend/temp/
 backend/output/
+# 配置文件与环境变量
 backend/manifest/config/config.yaml
 **/config/config.yaml
+.env
+backend/.env
+*.env

@@ -1,0 +1,27 @@
+.git
+.gitignore
+.dockerignore
+.venv
+venv
+__pycache__
+*.pyc
+node_modules
+dist
+*.log
+*.exe
+download_failed.txt
+verify_failed.txt
+.idea
+.vscode
+.workbuddy
+.wrangler
+
+# 排除后端本地临时编译与产物
+backend/bin
+backend/temp
+backend/output
+backend/main
+backend/main.exe
+backend/manifest/config/config.yaml
+.env
+backend/.env
