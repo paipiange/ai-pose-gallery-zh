@@ -2,9 +2,20 @@
 
 > 288 组 / 1439 张 AI 人体姿势参考图，日文数据完整汉化，全新集成本地与多云端 **拍片哥 AI 姿势生图与试穿工坊**，附可直接部署的响应式画廊。
 
-![画廊预览](docs/preview.jpg)
+## 🎬 姿势参考 + 人物参考 → AI 生成结果
 
-<details><summary>手机端预览</summary>
+选择姿势骨架控制动作与构图，再上传人物/服装参考，即可生成同时保留目标姿势、人物面容与穿搭特征的完整图片。
+
+| ① 姿势与构图参考 | ② 人物与服装参考 | ③ AI 融合生成结果 |
+| :---: | :---: | :---: |
+| <img src="docs/pose-studio-pose-reference.png" width="280" alt="输入的 AI 人体姿势骨架参考图" /> | <img src="docs/pose-studio-person-reference.png" width="280" alt="输入的人物面容与服装参考图" /> | <img src="docs/pose-studio-generated-result.png" width="280" alt="保持目标姿势并融合人物与服装特征的 AI 生成结果" /> |
+| 锁定身体动作、视角与画面构图 | 提供面容、发型与服装特征 | 将两份参考融合为完整真人效果图 |
+
+> **上图即实际工作流：图 1 + 图 2 → 图 3。** 人物头像与服装均为可选输入；只选择姿势，也可以让模型自动完成人物与穿搭设计。
+
+<details><summary>查看完整画廊与移动端预览</summary>
+
+![画廊预览](docs/preview.jpg)
 
 ![手机端预览](docs/mobile.jpg)
 
