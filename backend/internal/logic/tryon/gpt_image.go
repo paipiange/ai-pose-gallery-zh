@@ -120,10 +120,18 @@ func (o *OpenAIImages) describeVisualFeatures(ctx context.Context, personB64, ga
 		visionModel = "gpt-4o-mini"
 	}
 
+	hasGarment := strings.TrimSpace(garmentB64) != ""
 	hasAvatar := len(avatarB64) > 0 && strings.TrimSpace(avatarB64[0]) != ""
-	promptText := "Describe Image 1 (the person: adult East Asian/ethnicity, age, hair style and color, facial features, gentle expression) and Image 2 (the exact clothing outfit: every single garment item, colors, patterns, materials, cut, shoes, accessories). Return a concise 2-sentence visual description for a fashion catalog image generator."
-	if hasAvatar {
-		promptText = "Describe Image 1 (the mannequin/person pose reference: limb posture, perspective, orientation), Image 2 (the exact clothing outfit: items, colors, patterns, materials), and Image 3 (the avatar face reference: ethnicity, gender, hair style/color, distinct facial features, expression). Return a concise 3-sentence visual description for generating a dressed model in Image 1's pose with Image 3's face."
+
+	var promptText string
+	if hasGarment && hasAvatar {
+		promptText = "Describe Image 1 (the mannequin/pose reference: limb posture, perspective, orientation), Image 2 (the exact clothing outfit: items, colors, patterns, materials), and Image 3 (the avatar face reference: ethnicity, gender, hair style/color, distinct facial features, expression). Return a concise 3-sentence visual description for generating a dressed model in Image 1's exact pose with Image 3's face."
+	} else if hasGarment {
+		promptText = "Describe Image 1 (the person/pose reference: limb posture, perspective, orientation) and Image 2 (the exact clothing outfit: every single garment item, colors, patterns, materials, cut, shoes, accessories). Return a concise 2-sentence visual description for a fashion catalog image generator in Image 1's exact pose."
+	} else if hasAvatar {
+		promptText = "Describe Image 1 (the mannequin/pose reference: limb posture, perspective, orientation) and Image 2 (the avatar face reference: ethnicity, gender, hair style/color, distinct facial features, expression). Return a concise 2-sentence visual description for generating a model in Image 1's exact pose with Image 2's face."
+	} else {
+		promptText = "Describe Image 1 (the mannequin/pose reference: limb posture, perspective, orientation). Return a concise 1-sentence visual description for generating a dressed model in this exact pose."
 	}
 
 	contents := []chatVisionContent{
@@ -137,12 +145,14 @@ func (o *OpenAIImages) describeVisualFeatures(ctx context.Context, personB64, ga
 				URL: "data:image/png;base64," + ensureBase64(personB64),
 			},
 		},
-		{
+	}
+	if hasGarment {
+		contents = append(contents, chatVisionContent{
 			Type: "image_url",
 			ImageURL: &chatImageURL{
 				URL: "data:image/png;base64," + ensureBase64(garmentB64),
 			},
-		},
+		})
 	}
 	if hasAvatar {
 		contents = append(contents, chatVisionContent{
@@ -205,25 +215,32 @@ func (o *OpenAIImages) Generate(ctx context.Context, personB64, garmentB64, prom
 		return "", fmt.Errorf("模型 %s 未配置 API Key", o.name)
 	}
 
+	hasGarment := strings.TrimSpace(garmentB64) != ""
 	hasAvatar := len(avatarB64) > 0 && strings.TrimSpace(avatarB64[0]) != ""
 
 	// 针对 GPT-Image 系列：由于 OpenAI / 中转站生图接口会静默忽略 image[] 传参，
 	// 此处先通过极速视觉分析提取人像神态与服装精确单品特征（若有头像则同时提取人脸神韵），再透传给 GPT-Image-2，
-	// 确保衣服款式 100% 对齐、人脸神貌高度匹配。
+	// 确保姿势 100% 还原、衣服款式对齐、人脸神貌高度匹配。
 	isGPT := strings.Contains(strings.ToLower(o.model), "gpt-image") || strings.Contains(strings.ToLower(o.name), "gpt-image")
 	if isGPT {
 		if visualDesc := o.describeVisualFeatures(ctx, personB64, garmentB64, avatarB64...); visualDesc != "" {
-			if hasAvatar {
-				prompt = fmt.Sprintf("Full-body commercial fashion photograph:\n%s\nStrict requirements:\n1. The model adopts the exact limb pose and perspective from Image 1.\n2. The model faithfully has the facial features, hairstyle, and expression of Image 3 (the avatar reference).\n3. The model is wearing the complete outfit from Image 2 faithfully.\n4. Clean daylight studio, neutral minimal background, photorealistic 8k, crisp fabric textures.\nOutput: ONLY the final dressed-up photograph.", visualDesc)
+			if hasGarment && hasAvatar {
+				prompt = fmt.Sprintf("Full-body commercial fashion photograph:\n%s\nStrict requirements:\n1. The model 100%% rigidly adopts the exact limb pose, spine curvature, and perspective from Image 1.\n2. The model faithfully has the facial features, hairstyle, and expression of Image 3 (the avatar reference).\n3. The model is wearing the complete outfit from Image 2 faithfully.\n4. Clean daylight studio, neutral minimal background, photorealistic 8k, crisp fabric textures.\nOutput: ONLY the final dressed-up photograph.", visualDesc)
+			} else if hasGarment {
+				prompt = fmt.Sprintf("Full-body commercial fashion catalog photograph:\n%s\nStrict requirements:\n1. The adult model 100%% rigidly adopts the exact limb pose, spine curvature, and perspective from Image 1.\n2. The model is wearing the complete outfit from Image 2 faithfully.\n3. Clean daylight studio, neutral minimal background, photorealistic 8k, crisp fabric textures.\nOutput: ONLY the final dressed-up photograph.", visualDesc)
+			} else if hasAvatar {
+				prompt = fmt.Sprintf("Full-body commercial fashion photograph:\n%s\nStrict requirements:\n1. The model 100%% rigidly adopts the exact limb pose, spine curvature, and perspective from Image 1.\n2. The model faithfully has the facial features, hairstyle, and expression of Image 2 (the avatar reference).\n3. Clean daylight studio, neutral minimal background, photorealistic 8k, elegant fashion styling.\nOutput: ONLY the final photograph.", visualDesc)
 			} else {
-				prompt = fmt.Sprintf("Full-body commercial fashion catalog photograph:\n%s\nStrict requirements:\n1. The adult female model from Image 1 is wearing the complete outfit from Image 2 faithfully.\n2. Fully clothed, modest neckline, standard comfortable fit, elegant posture.\n3. Clean daylight studio, neutral minimal background, photorealistic 8k, crisp fabric textures.\nOutput: ONLY the final dressed-up photograph.", visualDesc)
+				prompt = fmt.Sprintf("Full-body commercial fashion photograph:\n%s\nStrict requirements:\n1. The model 100%% rigidly adopts the exact limb pose, spine curvature, and perspective from Image 1.\n2. Clean daylight studio, neutral minimal background, photorealistic 8k, elegant fashion styling.\nOutput: ONLY the final photograph.", visualDesc)
 			}
 		}
 	}
 
 	images := []string{
 		"data:image/png;base64," + ensureBase64(personB64),
-		"data:image/png;base64," + ensureBase64(garmentB64),
+	}
+	if hasGarment {
+		images = append(images, "data:image/png;base64,"+ensureBase64(garmentB64))
 	}
 	if hasAvatar {
 		images = append(images, "data:image/png;base64,"+ensureBase64(avatarB64[0]))

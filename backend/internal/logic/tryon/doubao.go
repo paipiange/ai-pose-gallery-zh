@@ -70,7 +70,9 @@ func (d *Doubao) Generate(ctx context.Context, personB64, garmentB64, prompt, si
 
 	images := []string{
 		"data:image/png;base64," + ensureBase64(personB64),
-		"data:image/png;base64," + ensureBase64(garmentB64),
+	}
+	if strings.TrimSpace(garmentB64) != "" {
+		images = append(images, "data:image/png;base64,"+ensureBase64(garmentB64))
 	}
 	if len(avatarB64) > 0 && strings.TrimSpace(avatarB64[0]) != "" {
 		images = append(images, "data:image/png;base64,"+ensureBase64(avatarB64[0]))

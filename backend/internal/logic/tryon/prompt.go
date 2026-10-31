@@ -1,65 +1,144 @@
-// Package tryon 换装提示词模板，针对不同模型优化
+// Package tryon 换装与姿势生图提示词模板，针对不同模型与组合优化
 package tryon
 
-// BuildPoseTryon 构建姿势引导换装专用提示词（针对 3D 人体白模/姿势素体）
-func BuildPoseTryon(lang string) string {
-	if lang == "zh" {
-		return poseTryonZhPrompt
+// BuildPosePrompt 根据是否有服装和头像构建对应的高强度姿势保留提示词
+func BuildPosePrompt(lang string, hasGarment, hasAvatar bool) string {
+	if hasGarment && hasAvatar {
+		return BuildPoseAvatarGarmentTryon(lang)
+	} else if hasGarment {
+		return BuildPoseGarmentTryon(lang)
+	} else if hasAvatar {
+		return BuildPoseAvatarTryon(lang)
 	}
-	return poseTryonEnPrompt
+	return BuildPoseOnlyTryon(lang)
 }
 
-// BuildPoseAvatarTryon 构建姿势骨架 + 服装 + 头像参考三合一生图专用提示词
+// BuildPoseTryon 构建姿势引导换装专用提示词（姿势素体+服装）
+func BuildPoseTryon(lang string) string {
+	return BuildPoseGarmentTryon(lang)
+}
+
+// BuildPoseGarmentTryon 构建姿势骨架 + 服装素材组合生图提示词
+func BuildPoseGarmentTryon(lang string) string {
+	if lang == "zh" {
+		return poseGarmentZhPrompt
+	}
+	return poseGarmentEnPrompt
+}
+
+// BuildPoseAvatarTryon 构建姿势骨架 + 人物头像组合生图提示词（无服装）
 func BuildPoseAvatarTryon(lang string) string {
 	if lang == "zh" {
-		return poseAvatarTryonZhPrompt
+		return poseAvatarZhPrompt
 	}
-	return poseAvatarTryonEnPrompt
+	return poseAvatarEnPrompt
 }
 
-// poseAvatarTryonEnPrompt 姿势引导换装+头像定制英文提示词
-const poseAvatarTryonEnPrompt = `Task: Professional fashion editorial photograph generated from a 3D pose reference, a garment photo, and an avatar face reference.
+// BuildPoseAvatarGarmentTryon 构建姿势骨架 + 服装素材 + 头像参考三合一生图提示词
+func BuildPoseAvatarGarmentTryon(lang string) string {
+	if lang == "zh" {
+		return poseAvatarGarmentZhPrompt
+	}
+	return poseAvatarGarmentEnPrompt
+}
 
-Strict Requirements:
-1. Pose & Angle Transfer: Faithfully follow the exact pose, body orientation, limb positioning, camera angle, and perspective shown in Image 1 (the wireframe/mannequin pose reference).
-2. Facial Identity & Avatar Reproduction: Faithfully transfer the face, facial features, eyes, skin tone, facial expression, and identity of the person shown in Image 3 (the avatar / face reference) onto the model. Seamlessly integrate the head and neck with the body pose, maintaining realistic skin texture and anatomically accurate proportions.
-3. Wardrobe: Dress the model in the exact garment and accessories shown in Image 2. Reproduce the colors, fabrics, drape, textures, neckline, and tailored silhouette faithfully.
-4. Lighting & Environment: Professional studio editorial lighting, clean neutral backdrop, shallow depth of field, 8k resolution, ultra-detailed fashion magazine standard.
+// BuildPoseOnlyTryon 构建纯姿势骨架生图提示词（无头像、无服装）
+func BuildPoseOnlyTryon(lang string) string {
+	if lang == "zh" {
+		return poseOnlyZhPrompt
+	}
+	return poseOnlyEnPrompt
+}
 
-Output: ONLY the final dressed-up fashion photograph.`
+// ==================== 1. 姿势 + 服装 + 头像三合一 ====================
 
-// poseAvatarTryonZhPrompt 姿势引导换装+头像定制中文提示词
-const poseAvatarTryonZhPrompt = `任务：基于人体姿势参考、服装设计图及人物头像参考，生成专业商业时尚写实人像大片。
+const poseAvatarGarmentEnPrompt = `Task: Professional commercial fashion editorial photograph generated from a 3D pose reference (Image 1), a garment photo (Image 2), and an avatar face reference (Image 3).
 
-严格要求：
-1. 姿态与视角迁移：严格还原图 1（人体姿势参考素体）中的身体姿态、四肢摆放、躯干朝向、透视关系以及拍摄视角（正面/俯视/仰视/侧面/斜侧）。
-2. 人物人脸与身份复刻：精准复刻图 3（头像/人脸参考图）中的人物五官特征、脸型轮廓、神态气质与肤色质感，将该头像自然无缝地融合到姿势模特的头部，头部朝向与光影同身体姿势完美契合。
-3. 服装精准着装：让模特完整穿上图 2 中的服装，忠实还原服装的剪裁款式、面料质感、褶皱受力与颜色细节。
-4. 商业画质：采用高级商业影棚布光，干净明亮的中性背景，8K 超高细节与写实质感。
+CRITICAL & MANDATORY REQUIREMENTS:
+1. ABSOLUTE POSE & ANGLE PRESERVATION (Pose & Angle Transfer - HIGHEST MANDATORY PRIORITY): The generated model MUST 100% strictly duplicate and match the EXACT 3D human pose, skeletal orientation, bone alignment, limb angles, spine curvature, torso direction, hand and finger gestures, leg placement, and camera perspective (eye-level/high-angle/low-angle/side/diagonal) shown in Image 1 (the wireframe/mannequin pose reference). ABSOLUTELY FORBIDDEN: DO NOT alter, relax, mirror, flip, rotate, or re-orient any limb, joint, or the camera angle. Treat Image 1 as an unchangeable 3D spatial wireframe and pose ground truth.
+2. FACIAL IDENTITY & AVATAR REPRODUCTION: Faithfully transfer the face, eyes, nose, mouth, facial contours, expression, skin tone, and identity of the person shown in Image 3 (the avatar / face reference) onto the model. Seamlessly integrate the head and neck onto the body in Image 1, matching the exact head angle and gaze direction.
+3. WARDROBE FIDELITY: Dress the model in the exact garment shown in Image 2. Reproduce the colors, fabrics, drape, textures, neckline, sleeves, and tailored silhouette faithfully, fitted naturally over Image 1's pose.
+4. COMMERCIAL EDITORIAL QUALITY: Professional high-end studio lighting, clean neutral backdrop, shallow depth of field, photorealistic 8k, natural human skin texture, ultra-detailed fashion magazine standard.
 
-输出：仅输出最终的高清着装合成人像照片。`
+Output: ONLY the final photograph.`
 
-// poseTryonEnPrompt 姿势引导换装专用英文提示词（效果最佳）
-const poseTryonEnPrompt = `Task: Professional fashion editorial photograph generated from a 3D pose reference and a garment photo.
+const poseAvatarGarmentZhPrompt = `任务：基于人体姿势参考（图 1）、服装设计图（图 2）及人物头像参考（图 3），生成专业商业时尚写实人像大片。
 
-Strict Requirements:
-1. Pose & Angle Transfer: Faithfully follow the exact pose, body orientation, limb positioning, camera angle, and perspective shown in Image 1 (the wireframe/mannequin pose reference). 
-2. Realistic Human Model: Transform the reference mannequin into an attractive, photorealistic adult fashion model with natural skin texture, realistic facial expression, modern styled hairstyle, and anatomically accurate proportions.
-3. Wardrobe: Dress the model in the exact garment and accessories shown in Image 2. Reproduce the colors, fabrics, drape, textures, neckline, and tailored silhouette faithfully.
-4. Lighting & Environment: Professional studio editorial lighting, clean neutral backdrop, shallow depth of field, 8k resolution, ultra-detailed fashion magazine standard.
+严格核心要求：
+1. 【最高绝对优先级核心指令：人体姿势与骨架必须 100% 绝对保留】生成的真人模特必须严格 100% 复刻并完全贴合图 1（人体姿势参考素体）中的人体三维骨骼姿态、四肢摆放角度、关节点位置、躯干朝向、头部倾角、脊柱弧度、手部与手指姿态、双腿姿势以及镜头的拍摄透视视角（正面/俯视/仰视/侧视/斜角等）。绝对严禁擅自修改肢体动作、擅自微调四肢角度、擅自旋转或镜像身体、擅自改变摄像机拍摄视角！图 1 为不可变更的绝对几何骨架底稿，生成模特的身体线条与构图视角必须与图 1 严丝合缝、完全吻合！
+2. 人物面部与身份复刻：精准复刻图 3（头像/人脸参考图）中的人物五官特征、脸型轮廓、神态气质与肤色质感，自然无缝地融合到姿势模特的头部，头部朝向与视线方向同姿势完全契合。
+3. 服装精准着装：让模特完整穿上图 2 中的服装，忠实还原服装的款式剪裁、面料质感、褶皱受力与颜色细节。
+4. 商业画质：采用高级商业影棚布光，干净明亮的中性背景，8K 超高细节与自然逼真的皮肤毛孔质感。
 
-Output: ONLY the final dressed-up fashion photograph.`
+输出：仅输出最终的高清合成人像照片。`
 
-// poseTryonZhPrompt 姿势引导换装专用中文提示词
-const poseTryonZhPrompt = `任务：基于人体姿势参考与服装设计图，生成专业商业时尚写实人像大片。
+// ==================== 2. 姿势 + 服装 ====================
 
-严格要求：
-1. 姿态与视角迁移：严格还原图 1（人体姿势参考素体）中的身体姿态、四肢摆放、躯干朝向、透视关系以及拍摄视角（正面/俯视/仰视/侧面/斜侧）。
-2. 真人模特渲染：将姿势素体渲染为相貌自然端庄、皮肤质感逼真、五官立体的成年时尚模特，发型与姿势风格自然契合。
-3. 服装精准着装：让模特完整穿上图 2 中的服装，忠实还原服装的剪裁款式、面料质感、褶皱受力与颜色细节。
-4. 商业画质：采用高级商业影棚布光，干净明亮的中性背景，8K 超高细节与写实质感。
+const poseGarmentEnPrompt = `Task: Professional commercial fashion editorial photograph generated from a 3D pose reference (Image 1) and a garment photo (Image 2).
 
-输出：仅输出最终的高清着装合成人像照片。`
+CRITICAL & MANDATORY REQUIREMENTS:
+1. ABSOLUTE POSE & ANGLE PRESERVATION (Pose & Angle Transfer - HIGHEST MANDATORY PRIORITY): The generated model MUST 100% strictly duplicate and match the EXACT 3D human pose, skeletal orientation, bone alignment, limb angles, spine curvature, torso direction, hand and finger gestures, leg placement, and camera perspective (eye-level/high-angle/low-angle/side/diagonal) shown in Image 1 (the wireframe/mannequin pose reference). ABSOLUTELY FORBIDDEN: DO NOT alter, relax, mirror, flip, rotate, or re-orient any limb, joint, or the camera angle. Treat Image 1 as an unchangeable 3D spatial wireframe and pose ground truth.
+2. REALISTIC HUMAN MODEL: Transform the wireframe/mannequin in Image 1 into an attractive, photorealistic adult fashion model with natural skin texture, lifelike facial expression, stylish hairstyle, and anatomically accurate proportions.
+3. WARDROBE FIDELITY: Dress the model in the exact garment shown in Image 2. Reproduce the colors, fabrics, drape, textures, neckline, sleeves, and tailored silhouette faithfully, fitted naturally over Image 1's pose.
+4. COMMERCIAL EDITORIAL QUALITY: Professional high-end studio lighting, clean neutral backdrop, shallow depth of field, photorealistic 8k, ultra-detailed fashion magazine standard.
+
+Output: ONLY the final photograph.`
+
+const poseGarmentZhPrompt = `任务：基于人体姿势参考（图 1）与服装设计图（图 2），生成专业商业时尚写实人像大片。
+
+严格核心要求：
+1. 【最高绝对优先级核心指令：人体姿势与骨架必须 100% 绝对保留】生成的真人模特必须严格 100% 复刻并完全贴合图 1（人体姿势参考素体）中的人体三维骨骼姿态、四肢摆放角度、关节点位置、躯干朝向、头部倾角、脊柱弧度、手部与手指姿态、双腿姿势以及镜头的拍摄透视视角（正面/俯视/仰视/侧视/斜角等）。绝对严禁擅自修改肢体动作、擅自微调四肢角度、擅自旋转或镜像身体、擅自改变摄像机拍摄视角！图 1 为不可变更的绝对几何骨架底稿，生成模特的身体线条与构图视角必须与图 1 严丝合缝、完全吻合！
+2. 真人模特渲染：将姿势素体渲染为相貌端庄自然、皮肤质感逼真、五官立体的成年时尚模特，发型与姿势风格自然契合。
+3. 服装精准着装：让模特完整穿上图 2 中的服装，忠实还原服装的款式剪裁、面料质感、褶皱受力与颜色细节。
+4. 商业画质：采用高级商业影棚布光，干净明亮的中性背景，8K 超高细节与自然逼真的皮肤毛孔质感。
+
+输出：仅输出最终的高清合成人像照片。`
+
+// ==================== 3. 姿势 + 头像（无服装） ====================
+
+const poseAvatarEnPrompt = `Task: Professional commercial fashion editorial photograph generated from a 3D pose reference (Image 1) and an avatar face reference (Image 2).
+
+CRITICAL & MANDATORY REQUIREMENTS:
+1. ABSOLUTE POSE & ANGLE PRESERVATION (Pose & Angle Transfer - HIGHEST MANDATORY PRIORITY): The generated model MUST 100% strictly duplicate and match the EXACT 3D human pose, skeletal orientation, bone alignment, limb angles, spine curvature, torso direction, hand and finger gestures, leg placement, and camera perspective (eye-level/high-angle/low-angle/side/diagonal) shown in Image 1 (the wireframe/mannequin pose reference). ABSOLUTELY FORBIDDEN: DO NOT alter, relax, mirror, flip, rotate, or re-orient any limb, joint, or the camera angle. Treat Image 1 as an unchangeable 3D spatial wireframe and pose ground truth.
+2. FACIAL IDENTITY & AVATAR REPRODUCTION: Faithfully transfer the face, eyes, nose, mouth, facial contours, expression, skin tone, and identity of the person shown in Image 2 (the avatar / face reference) onto the model. Seamlessly integrate the head and neck onto the body in Image 1, matching the exact head angle and gaze direction.
+3. TASTEFUL MODERN WARDROBE: Dress the model in an elegant, stylish, well-tailored modern outfit that perfectly complements the pose and body contour, with natural fabric drape and realistic lighting folds.
+4. COMMERCIAL EDITORIAL QUALITY: Professional high-end studio lighting, clean neutral backdrop, shallow depth of field, photorealistic 8k, natural human skin texture, ultra-detailed fashion magazine standard.
+
+Output: ONLY the final photograph.`
+
+const poseAvatarZhPrompt = `任务：基于人体姿势参考（图 1）与人物头像参考（图 2），生成专业商业时尚写实人像大片。
+
+严格核心要求：
+1. 【最高绝对优先级核心指令：人体姿势与骨架必须 100% 绝对保留】生成的真人模特必须严格 100% 复刻并完全贴合图 1（人体姿势参考素体）中的人体三维骨骼姿态、四肢摆放角度、关节点位置、躯干朝向、头部倾角、脊柱弧度、手部与手指姿态、双腿姿势以及镜头的拍摄透视视角（正面/俯视/仰视/侧视/斜角等）。绝对严禁擅自修改肢体动作、擅自微调四肢角度、擅自旋转或镜像身体、擅自改变摄像机拍摄视角！图 1 为不可变更的绝对几何骨架底稿，生成模特的身体线条与构图视角必须与图 1 严丝合缝、完全吻合！
+2. 人物面部与身份复刻：精准复刻图 2（头像/人脸参考图）中的人物五官特征、脸型轮廓、神态气质与肤色质感，自然无缝地融合到姿势模特的头部，头部朝向与视线方向同姿势完全契合。
+3. 时尚着装搭配：为模特搭配一套剪裁得体、优雅大方的现代时尚服饰，面料垂坠自然，贴合姿态线条。
+4. 商业画质：采用高级商业影棚布光，干净明亮的中性背景，8K 超高细节与自然逼真的皮肤毛孔质感。
+
+输出：仅输出最终的高清合成人像照片。`
+
+// ==================== 4. 纯姿势生图（无头像、无服装） ====================
+
+const poseOnlyEnPrompt = `Task: Professional commercial fashion editorial photograph generated from a 3D pose reference (Image 1).
+
+CRITICAL & MANDATORY REQUIREMENTS:
+1. ABSOLUTE POSE & ANGLE PRESERVATION (Pose & Angle Transfer - HIGHEST MANDATORY PRIORITY): The generated model MUST 100% strictly duplicate and match the EXACT 3D human pose, skeletal orientation, bone alignment, limb angles, spine curvature, torso direction, hand and finger gestures, leg placement, and camera perspective (eye-level/high-angle/low-angle/side/diagonal) shown in Image 1 (the wireframe/mannequin pose reference). ABSOLUTELY FORBIDDEN: DO NOT alter, relax, mirror, flip, rotate, or re-orient any limb, joint, or the camera angle. Treat Image 1 as an unchangeable 3D spatial wireframe and pose ground truth.
+2. REALISTIC HUMAN MODEL: Transform the wireframe/mannequin in Image 1 into an attractive, photorealistic adult fashion model with natural human skin texture, lifelike facial expression, stylish hairstyle, and anatomically accurate proportions.
+3. TASTEFUL MODERN WARDROBE: Dress the model in an elegant, stylish, well-tailored modern outfit that perfectly complements the pose and body contour, with natural fabric drape and realistic lighting folds.
+4. COMMERCIAL EDITORIAL QUALITY: Professional high-end studio lighting, clean neutral backdrop, shallow depth of field, photorealistic 8k, ultra-detailed fashion magazine standard.
+
+Output: ONLY the final photograph.`
+
+const poseOnlyZhPrompt = `任务：基于人体姿势参考（图 1），生成专业商业时尚写实人像大片。
+
+严格核心要求：
+1. 【最高绝对优先级核心指令：人体姿势与骨架必须 100% 绝对保留】生成的真人模特必须严格 100% 复刻并完全贴合图 1（人体姿势参考素体）中的人体三维骨骼姿态、四肢摆放角度、关节点位置、躯干朝向、头部倾角、脊柱弧度、手部与手指姿态、双腿姿势以及镜头的拍摄透视视角（正面/俯视/仰视/侧视/斜角等）。绝对严禁擅自修改肢体动作、擅自微调四肢角度、擅自旋转或镜像身体、擅自改变摄像机拍摄视角！图 1 为不可变更的绝对几何骨架底稿，生成模特的身体线条与构图视角必须与图 1 严丝合缝、完全吻合！
+2. 真人模特渲染：将姿势素体渲染为相貌端庄自然、皮肤质感逼真、五官立体的成年时尚模特，发型与姿势风格自然契合。
+3. 时尚着装搭配：为模特搭配一套剪裁得体、优雅大方的现代时尚服饰，面料垂坠自然，贴合姿态线条。
+4. 商业画质：采用高级商业影棚布光，干净明亮的中性背景，8K 超高细节与自然逼真的皮肤毛孔质感。
+
+输出：仅输出最终的高清合成人像照片。`
+
+// ==================== 保留换装与通用提示词 ====================
 
 // BuildGPTSafety 构建 GPT-Image 专用的防封控安全提示词
 func BuildGPTSafety(lang string) string {
@@ -76,7 +155,6 @@ func BuildGPT(lang string) string {
 
 // BuildGemini 构建 Gemini（Nano Banana 2）图像模型的提示词（保留原提示词）
 func BuildGemini(lang string) string {
-	// Gemini 对中英文都支持良好，但换装任务英文指令更稳定
 	return enPrompt
 }
 
@@ -88,7 +166,6 @@ func BuildDefault(lang string) string {
 	return enPrompt
 }
 
-// gptSafetyEnPrompt GPT-Image-2 专用英文防封控安全提示词
 const gptSafetyEnPrompt = `Task: Professional commercial fashion virtual try-on photograph.
 
 Strict Requirements:
@@ -99,7 +176,6 @@ Strict Requirements:
 
 Output: ONLY the final dressed-up photograph.`
 
-// gptSafetyZhPrompt GPT-Image-2 专用中文防封控安全提示词
 const gptSafetyZhPrompt = `任务：专业商业时尚虚拟试衣摄影。
 
 严格要求：
@@ -110,7 +186,6 @@ const gptSafetyZhPrompt = `任务：专业商业时尚虚拟试衣摄影。
 
 输出：仅输出最终的完整着装照片。`
 
-// enPrompt 英文提示词（主用，效果最稳定）
 const enPrompt = `You are a professional fashion virtual try-on assistant.
 
 Task: Dress the person in the first image wearing the garment in the second image, and output a single photorealistic full-body or half-body photo.
@@ -125,7 +200,6 @@ Strict requirements:
 
 Output: ONLY the final dressed-up photograph, nothing else.`
 
-// zhPrompt 中文提示词（备用）
 const zhPrompt = `你是一名专业的时尚虚拟试衣助手。
 
 任务：让第一张图片中的人物穿上第二张图片中的服装，输出一张逼真的全身或半身照片。

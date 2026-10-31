@@ -398,7 +398,21 @@ main{padding:22px 0 54px}
 .studio-sub-btn{height:30px;padding:0 10px;border:1px solid var(--line-strong);border-radius:7px;background:var(--surface);color:var(--text-2);font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:5px;cursor:pointer}
 .studio-sub-btn:hover{border-color:var(--accent);color:var(--accent)}
 
-/* 步骤 2 服装卡 */
+/* 步骤 2 人物头像 / 人脸参考 */
+.avatar-dropzone{border:2px dashed var(--line-strong);border-radius:12px;padding:16px 12px;text-align:center;cursor:pointer;background:var(--surface-2);color:var(--text-3);transition:border-color .16s,background .16s}
+.avatar-dropzone:hover,.avatar-dropzone.dragover{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.avatar-dropzone p{margin:6px 0 2px;font-size:12px;color:var(--text-2)}
+.avatar-dropzone span{font-size:10px}
+.avatar-actions-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px}
+.selected-avatar-bar{display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:10px;background:rgba(91,91,214,.07);border:1px solid rgba(91,91,214,.22)}
+.selected-avatar-bar img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);box-shadow:0 2px 8px rgba(91,91,214,.25)}
+.selected-avatar-meta{flex:1;min-width:0;line-height:1.35}
+.selected-avatar-meta strong{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.selected-avatar-meta small{color:var(--text-3);font-size:10px}
+.remove-avatar-btn{width:24px;height:24px;border:0;border-radius:50%;background:rgba(0,0,0,.08);cursor:pointer;display:grid;place-items:center;font-size:11px;transition:background .15s,color .15s}
+.remove-avatar-btn:hover{background:rgba(200,30,30,.15);color:#c81e1e}
+
+/* 步骤 3 搭配服装素材 */
 .garment-tabs{display:flex;gap:4px;background:#eceff5;padding:3px;border-radius:9px;margin-bottom:12px}
 .garment-tab{flex:1;border:0;border-radius:6px;background:transparent;color:var(--text-2);padding:6px 0;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap}
 .garment-tab.on{background:var(--surface);color:var(--accent);font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.08)}
@@ -422,20 +436,6 @@ main{padding:22px 0 54px}
 .selected-garment-meta strong{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .selected-garment-meta small{color:var(--text-3);font-size:10px}
 .remove-garment-btn{width:24px;height:24px;border:0;border-radius:50%;background:rgba(0,0,0,.08);cursor:pointer;display:grid;place-items:center;font-size:11px}
-
-/* 步骤 3 头像定制 */
-.avatar-dropzone{border:2px dashed var(--line-strong);border-radius:12px;padding:16px 12px;text-align:center;cursor:pointer;background:var(--surface-2);color:var(--text-3);transition:border-color .16s,background .16s}
-.avatar-dropzone:hover,.avatar-dropzone.dragover{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
-.avatar-dropzone p{margin:6px 0 2px;font-size:12px;color:var(--text-2)}
-.avatar-dropzone span{font-size:10px}
-.avatar-actions-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px}
-.selected-avatar-bar{display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:10px;background:rgba(91,91,214,.07);border:1px solid rgba(91,91,214,.22)}
-.selected-avatar-bar img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);box-shadow:0 2px 8px rgba(91,91,214,.25)}
-.selected-avatar-meta{flex:1;min-width:0;line-height:1.35}
-.selected-avatar-meta strong{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.selected-avatar-meta small{color:var(--text-3);font-size:10px}
-.remove-avatar-btn{width:24px;height:24px;border:0;border-radius:50%;background:rgba(0,0,0,.08);cursor:pointer;display:grid;place-items:center;font-size:11px;transition:background .15s,color .15s}
-.remove-avatar-btn:hover{background:rgba(200,30,30,.15);color:#c81e1e}
 
 /* 步骤 4 参数 */
 .studio-param-grid{display:grid;gap:10px}
@@ -757,13 +757,54 @@ main{padding:22px 0 54px}
           </div>
         </section>
 
-        <!-- 步骤 2：搭配服装设计 -->
+        <!-- 步骤 2：人物头像 / 人脸参考（可选） -->
         <section class="studio-step-card">
           <div class="step-head">
             <span class="step-num">2</span>
             <div>
-              <h3>搭配服装（血肉）</h3>
-              <p class="step-desc">提取服装的款式、剪裁面料与色彩，忠实上身试穿</p>
+              <h3>人物头像 / 人脸参考 <span class="badge badge-sub" style="font-size:10px;margin-left:4px">可选</span></h3>
+              <p class="step-desc">定制面部神态与五官气质；未添加时由 AI 自动生成自然写实模特面部</p>
+            </div>
+          </div>
+
+          <!-- 未添加头像时的区域 -->
+          <div class="avatar-dropzone" id="avatarDropzone">
+            <input type="file" id="avatarFileInput" accept="image/png,image/jpeg,image/webp" hidden>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <p><strong>点击选择头像</strong> 或 <strong>直接 Ctrl+V 粘贴</strong></p>
+            <span>支持拖拽图片到此处，格式支持 PNG / JPG / WEBP（仅需人脸局部截图即可）</span>
+            <div class="avatar-actions-row">
+              <button type="button" class="studio-sub-btn" id="pasteAvatarBtn">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                <span>读取剪贴板图片</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 已添加头像时的回显 -->
+          <div class="selected-avatar-bar" id="selectedAvatarBar" hidden>
+            <img id="selectedAvatarImg" src="" alt="已选头像">
+            <div class="selected-avatar-meta">
+              <div style="display:flex;align-items:center;gap:6px">
+                <strong id="selectedAvatarName">已选头像</strong>
+                <span class="badge badge-primary" style="font-size:9px">已启用面容复刻</span>
+              </div>
+              <small id="selectedAvatarSource">剪贴板粘贴</small>
+            </div>
+            <button type="button" class="remove-avatar-btn" id="removeAvatarBtn" title="清除头像（恢复默认模特面容）">✕</button>
+          </div>
+        </section>
+
+        <!-- 步骤 3：搭配服装素材（可选） -->
+        <section class="studio-step-card">
+          <div class="step-head">
+            <span class="step-num">3</span>
+            <div>
+              <h3>搭配服装素材 <span class="badge badge-sub" style="font-size:10px;margin-left:4px">可选</span></h3>
+              <p class="step-desc">指定上身服装款式与面料；未选择时由 AI 为该姿势自动搭配得体时尚服装</p>
             </div>
           </div>
 
@@ -803,48 +844,7 @@ main{padding:22px 0 54px}
               <strong id="selectedGarmentName">已选服装</strong>
               <small id="selectedGarmentSource">预设款式</small>
             </div>
-            <button type="button" class="remove-garment-btn" id="removeGarmentBtn" title="清除重新选择">✕</button>
-          </div>
-        </section>
-
-        <!-- 步骤 3：人物头像 / 人脸定制（可选） -->
-        <section class="studio-step-card">
-          <div class="step-head">
-            <span class="step-num">3</span>
-            <div>
-              <h3>人物头像 / 人脸参考 <span class="badge badge-sub" style="font-size:10px;margin-left:4px">可选</span></h3>
-              <p class="step-desc">定制面部神态与发型；未添加时默认生成写实模特面部</p>
-            </div>
-          </div>
-
-          <!-- 未添加头像时的区域 -->
-          <div class="avatar-dropzone" id="avatarDropzone">
-            <input type="file" id="avatarFileInput" accept="image/png,image/jpeg,image/webp" hidden>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-              <circle cx="12" cy="7" r="4"/>
-            </svg>
-            <p><strong>点击选择头像</strong> 或 <strong>直接 Ctrl+V 粘贴</strong></p>
-            <span>支持拖拽图片到此处，格式支持 PNG / JPG / WEBP（仅需人脸局部截图即可）</span>
-            <div class="avatar-actions-row">
-              <button type="button" class="studio-sub-btn" id="pasteAvatarBtn">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
-                <span>读取剪贴板图片</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- 已添加头像时的回显 -->
-          <div class="selected-avatar-bar" id="selectedAvatarBar" hidden>
-            <img id="selectedAvatarImg" src="" alt="已选头像">
-            <div class="selected-avatar-meta">
-              <div style="display:flex;align-items:center;gap:6px">
-                <strong id="selectedAvatarName">已选头像</strong>
-                <span class="badge badge-primary" style="font-size:9px">已启用面容复刻</span>
-              </div>
-              <small id="selectedAvatarSource">剪贴板粘贴</small>
-            </div>
-            <button type="button" class="remove-avatar-btn" id="removeAvatarBtn" title="清除头像（恢复默认模特面容）">✕</button>
+            <button type="button" class="remove-garment-btn" id="removeGarmentBtn" title="清除服装（由 AI 自动搭配时装）">✕</button>
           </div>
         </section>
 
@@ -920,19 +920,23 @@ main{padding:22px 0 54px}
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="M12 8v8m-4-4h8"/></svg>
           </div>
           <h3>拍片哥 AI 姿势生图已就绪</h3>
-          <p>左侧已默认锁定选定姿势与角度，挑选一套服装款式或上传头像后，点击「立即由拍片哥 AI 生成」即可合成真人时尚摄影大片。</p>
+          <p>左侧已默认锁定选定姿势与角度。人物头像与搭配服装均为可选，可直接生成纯姿势大片，或自由定制面容与穿搭。点击「立即由拍片哥 AI 生成」即可严格保留姿态骨架生成真人时尚大片。</p>
           <div class="studio-tips-grid">
             <div class="tip-card">
-              <strong>📐 严格还原姿态</strong>
-              <span>无论俯视、仰视、侧身还是斜侧，完全忠于白模素体骨骼</span>
+              <strong>📐 姿势骨架 100% 绝对保留</strong>
+              <span>无论俯视、仰视、侧视或正面，完全忠实对齐人体素体骨架与构图透视，绝不擅自改变姿势。</span>
             </div>
             <div class="tip-card">
-              <strong>👗 真实面料褶皱</strong>
-              <span>根据身体受力点自动计算衣物垂坠与阴影</span>
+              <strong>👤 定制人脸与神态（可选）</strong>
+              <span>支持拖拽或直接 Ctrl+V 粘贴头像局部特写，无缝复刻面部五官气质与神态；未添加时生成写实模特。</span>
+            </div>
+            <div class="tip-card">
+              <strong>👗 自由搭配服装（可选）</strong>
+              <span>选用经典款式或上传服装，自然模拟面料受力垂坠；未选择时由 AI 为该姿势自动搭配得体时装。</span>
             </div>
             <div class="tip-card">
               <strong>🔒 零持久化隐私安全</strong>
-              <span>浏览器本地 Key 临时代理，内存用完即弃，不落磁盘</span>
+              <span>浏览器本地 Key 临时代理，历史记录与图片仅存本地 IndexedDB。</span>
             </div>
           </div>
         </div>
@@ -1681,19 +1685,23 @@ async function executeStudioGenerate(poseImgUrl, garmentBase64, options = {}) {
   // 1. 姿势底图转 Base64
   const poseBase64 = await urlToBase64(poseImgUrl);
   
-  // 2. 构造请求载荷
+  // 2. 构造请求载荷（姿势底图必选，头像与服装均可选）
   const payload = {
-    person_image: poseBase64,      // 姿势白模作为模特骨架
-    garment_image: garmentBase64,  // 服装素材
+    person_image: poseBase64,      // 姿势白模作为模特骨架（必选）
     model: options.model || 'gemini',
     size: options.size || '1024x1536',
-    keep_face: false,              // 姿势是白模素体，无需保持原人脸
+    keep_face: false,              // 姿势底图生图，严格锁定 100% 姿势保留专用提示词
     lang: options.lang || 'zh'
   };
 
   // 可选定制头像
   if (options.avatarBase64) {
     payload.avatar_image = options.avatarBase64;
+  }
+
+  // 可选搭配服装
+  if (garmentBase64) {
+    payload.garment_image = garmentBase64;
   }
 
   // 3. 附带前端自定义模型配置（如有启用，非离线 ComfyUI 时透传）
@@ -1750,11 +1758,6 @@ function openStudioWithPose(group, item) {
 
   // 更新步骤 1 姿势卡回显
   updateStudioPoseCard();
-
-  // 若尚未选择服装，默认选择第一款预设服装
-  if (!studioState.garmentBase64) {
-    selectPresetGarment(PRESET_GARMENTS[0].id);
-  }
 
   updateChannelStatusNotice();
   refreshHistoryBadge();
@@ -2071,12 +2074,7 @@ $('#studioGenerateBtn').addEventListener('click', async () => {
 
   $('#studioErrorMsg').hidden = true;
   if (!studioState.item) {
-    $('#studioErrorMsg').textContent = '请先选定姿势参考底图';
-    $('#studioErrorMsg').hidden = false;
-    return;
-  }
-  if (!studioState.garmentBase64) {
-    $('#studioErrorMsg').textContent = '请先选择或上传一套搭配服装';
+    $('#studioErrorMsg').textContent = '请先选定姿势参考底图（骨架）';
     $('#studioErrorMsg').hidden = false;
     return;
   }
@@ -2095,12 +2093,40 @@ $('#studioGenerateBtn').addEventListener('click', async () => {
   studioState.startTime = Date.now();
   $('#studioElapsed').textContent = '0.0';
 
-  const loadingTitles = [
-    studioState.avatarBase64 ? '正在解析人体姿态骨架与人脸神韵…' : '正在解析人体姿态骨架…',
-    '正在提取服装剪裁与面料纹理…',
-    '正在多模态融合受力与自然褶皱…',
-    '正在渲染超高分辨率商业光影与细节…'
-  ];
+  const hasAvatar = !!studioState.avatarBase64;
+  const hasGarment = !!studioState.garmentBase64;
+
+  let loadingTitles = [];
+  if (hasAvatar && hasGarment) {
+    loadingTitles = [
+      '正在 100% 锁定人体姿态骨架与镜头视角…',
+      '正在提取人脸神态特征与服装剪裁纹理…',
+      '正在多模态高精度对齐姿势与自然褶皱…',
+      '正在渲染超高分辨率商业摄影大片…'
+    ];
+  } else if (hasGarment) {
+    loadingTitles = [
+      '正在 100% 绝对锁定人体姿态骨架与镜头透视…',
+      '正在提取服装剪裁、面料质感与色彩配饰…',
+      '正在计算身体受力点与面料自然垂坠…',
+      '正在渲染超高分辨率商业时尚大片…'
+    ];
+  } else if (hasAvatar) {
+    loadingTitles = [
+      '正在 100% 绝对锁定人体姿态骨架与镜头透视…',
+      '正在精准复刻人物五官气质与神态面容…',
+      '正在为当前姿态智能搭配得体时尚服装…',
+      '正在渲染超高分辨率商业人像大片…'
+    ];
+  } else {
+    loadingTitles = [
+      '正在 100% 绝对锁定人体姿态骨架与镜头透视…',
+      '正在构思写实模特面容与契合姿势的现代穿搭…',
+      '正在计算肢体关节点光影与立体空间感…',
+      '正在渲染超高分辨率商业摄影大片…'
+    ];
+  }
+
   let titleIndex = 0;
   $('#studioLoadingTitle').textContent = loadingTitles[0];
 
@@ -2120,7 +2146,7 @@ $('#studioGenerateBtn').addEventListener('click', async () => {
   }, 100);
 
   try {
-    const resData = await executeStudioGenerate(studioState.item.原图, studioState.garmentBase64, {
+    const resData = await executeStudioGenerate(studioState.item.原图, studioState.garmentBase64 || '', {
       avatarBase64: studioState.avatarBase64 || '',
       model,
       size,
@@ -2151,6 +2177,8 @@ $('#studioGenerateBtn').addEventListener('click', async () => {
       poseThumb: studioState.item.缩略图,
       hasAvatar: !!studioState.avatarBase64,
       avatarThumb: studioState.avatarBase64 || '',
+      hasGarment: !!studioState.garmentBase64,
+      garmentName: studioState.garmentName || '',
       resultImage: imgSrc,
       prompt: resData.prompt || '',
       model: resData.model || model,
@@ -2237,7 +2265,7 @@ async function renderHistoryList() {
         <img src="${item.resultImage}" alt="${esc(item.poseName)}">
       </div>
       <div class="history-item-meta">
-        <strong>${esc(item.poseName)} · ${esc(item.angle)}${item.hasAvatar ? ' <span class="badge badge-sub" style="font-size:9px">定制面容</span>' : ''}</strong>
+        <strong>${esc(item.poseName)} · ${esc(item.angle)}${item.hasAvatar ? ' <span class="badge badge-sub" style="font-size:9px">定制面容</span>' : ''}${item.hasGarment ? ' <span class="badge badge-sub" style="font-size:9px">搭配服装</span>' : ' <span class="badge badge-sub" style="font-size:9px;opacity:.7">AI搭配</span>'}</strong>
         <span>${esc(item.timestamp)}</span>
       </div>
     </div>

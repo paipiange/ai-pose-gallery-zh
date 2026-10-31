@@ -28,10 +28,10 @@ func (c *ControllerV1) Tryon(ctx context.Context, req *v1.TryonReq) (res *v1.Try
 	secService := security.GetService()
 	imgLimits := imagevalidate.LoadImageLimits(ctx)
 
-	// 1. 严格校验两张图片（人像和服装）真实格式、文件大小、尺寸及像素
-	personImg, garmentImg, imgErr := imagevalidate.ValidateImagesPair(req.PersonImage, req.GarmentImage, imgLimits)
-	if imgErr != nil {
-		if apiErr, ok := imgErr.(*security.APIError); ok {
+	// 1. 严格校验必选的姿势底图（人像骨架）真实格式、文件大小、尺寸及像素
+	personImg, err := imagevalidate.ValidateImage(req.PersonImage, imgLimits)
+	if err != nil {
+		if apiErr, ok := err.(*security.APIError); ok {
 			middleware.WriteAPIError(r, apiErr)
 			return nil, nil
 		}
@@ -54,6 +54,36 @@ func (c *ControllerV1) Tryon(ctx context.Context, req *v1.TryonReq) (res *v1.Try
 				return nil, nil
 			}
 			middleware.WriteAPIError(r, security.ErrInvalidImageBase64)
+			return nil, nil
+		}
+	}
+
+	// 1.2 若传递了可选搭配服装图，校验其真实格式、文件大小、尺寸及像素
+	var garmentImg *imagevalidate.ValidatedImage
+	if strings.TrimSpace(req.GarmentImage) != "" {
+		var gErr error
+		garmentImg, gErr = imagevalidate.ValidateImage(req.GarmentImage, imgLimits)
+		if gErr != nil {
+			if apiErr, ok := gErr.(*security.APIError); ok {
+				middleware.WriteAPIError(r, apiErr)
+				return nil, nil
+			}
+			middleware.WriteAPIError(r, security.ErrInvalidImageBase64)
+			return nil, nil
+		}
+	}
+
+	// 1.3 校验图片总解码大小限制（若配置了 MaxCombinedDecodedBytes）
+	if imgLimits.MaxCombinedDecodedBytes > 0 {
+		var totalBytes int64 = int64(len(personImg.Data))
+		if garmentImg != nil {
+			totalBytes += int64(len(garmentImg.Data))
+		}
+		if avatarImg != nil {
+			totalBytes += int64(len(avatarImg.Data))
+		}
+		if totalBytes > imgLimits.MaxCombinedDecodedBytes {
+			middleware.WriteAPIError(r, security.NewAPIError(422, 42203, "IMAGE_FILE_TOO_LARGE", "图片总大小超过限制"))
 			return nil, nil
 		}
 	}

@@ -2,6 +2,7 @@ package tryon
 
 import (
 	"context"
+	"encoding/base64"
 	"net"
 	"strings"
 	"testing"
@@ -95,16 +96,33 @@ func TestDecodeB64(t *testing.T) {
 func TestDoTryonValidation(t *testing.T) {
 	ctx := context.Background()
 
-	// Empty person
+	// 1. 空姿势底图（必填）应报错
 	_, _, _, err := DoTryon(ctx, "", "somegarment", "gemini", "1024x1536", "zh")
-	if err == nil || !strings.Contains(err.Error(), "人像照片不能为空") {
+	if err == nil || !strings.Contains(err.Error(), "姿势底图不能为空") {
 		t.Errorf("expected empty person error, got: %v", err)
 	}
 
-	// Empty garment
-	_, _, _, err = DoTryon(ctx, "someperson", "", "gemini", "1024x1536", "zh")
-	if err == nil || !strings.Contains(err.Error(), "服装图不能为空") {
-		t.Errorf("expected empty garment error, got: %v", err)
+	// 2. 空服装图（可选）不应报错服装图为空（虽未配 Key 调用会失败，但不会报服装为空）
+	validB64 := base64.StdEncoding.EncodeToString([]byte("fake-person-image-data-for-testing"))
+	_, _, _, err = DoTryon(ctx, validB64, "", "gemini", "1024x1536", "zh")
+	if err != nil && strings.Contains(err.Error(), "服装图不能为空") {
+		t.Errorf("empty garment should be allowed now, got: %v", err)
+	}
+
+	// 验证姿势提示词中包含姿势 100% 绝对保留约束
+	promptOnly := BuildPosePrompt("zh", false, false)
+	if !strings.Contains(promptOnly, "姿势与骨架必须 100% 绝对保留") {
+		t.Errorf("expected prompt to contain strict pose constraints, got: %s", promptOnly)
+	}
+	promptAvatar := BuildPosePrompt("zh", false, true)
+	if !strings.Contains(promptAvatar, "人物面部与身份复刻") || !strings.Contains(promptAvatar, "姿势与骨架必须 100% 绝对保留") {
+		t.Errorf("expected prompt to contain avatar and pose constraints, got: %s", promptAvatar)
+	}
+
+	// 3. 非空但非法 base64 服装图报错
+	_, _, _, err = DoTryon(ctx, validB64, "!!not-base64!!", "gemini", "1024x1536", "zh")
+	if err == nil || !strings.Contains(err.Error(), "服装图 base64 格式错误") {
+		t.Errorf("expected garment base64 error, got: %v", err)
 	}
 }
 

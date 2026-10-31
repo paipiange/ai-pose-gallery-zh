@@ -18,20 +18,23 @@ func DoTryon(ctx context.Context, personB64, garmentB64, model, size, lang strin
 // DoTryonWithClientConfig 支持请求级临时模型配置。
 // clientConfig 不会进入全局配置、缓存、数据库或日志。
 func DoTryonWithClientConfig(ctx context.Context, personB64, garmentB64, model, size, lang string, clientConfig *ModelConfig, avatarB64 ...string) (resultB64, usedModel, usedPrompt string, err error) {
-	// 参数校验
+	// 参数校验：姿势底图必选
 	if personB64 == "" {
-		return "", "", "", gerror.New("人像照片不能为空")
-	}
-	if garmentB64 == "" {
-		return "", "", "", gerror.New("服装图不能为空")
+		return "", "", "", gerror.New("姿势底图不能为空")
 	}
 	if err := decodeB64(personB64); err != nil {
-		return "", "", "", gerror.New("人像照片 base64 格式错误")
-	}
-	if err := decodeB64(garmentB64); err != nil {
-		return "", "", "", gerror.New("服装图 base64 格式错误")
+		return "", "", "", gerror.New("姿势底图 base64 格式错误")
 	}
 
+	// 搭配服装可选
+	hasGarment := strings.TrimSpace(garmentB64) != ""
+	if hasGarment {
+		if err := decodeB64(garmentB64); err != nil {
+			return "", "", "", gerror.New("服装图 base64 格式错误")
+		}
+	}
+
+	// 人物头像可选
 	hasAvatar := len(avatarB64) > 0 && strings.TrimSpace(avatarB64[0]) != ""
 	if hasAvatar {
 		if err := decodeB64(avatarB64[0]); err != nil {
@@ -39,8 +42,7 @@ func DoTryonWithClientConfig(ctx context.Context, personB64, garmentB64, model, 
 		}
 	}
 
-	// 默认模型：Gemini（Nano Banana 2），因为 GPT Image 系列对真人换装场景
-	// 会被官方安全审核拦截（moderation_blocked / sexual），Gemini 无此限制。
+	// 默认模型：Gemini（Nano Banana 2）
 	if model == "" {
 		model = "gemini"
 	}
@@ -55,24 +57,8 @@ func DoTryonWithClientConfig(ctx context.Context, personB64, garmentB64, model, 
 		return "", "", "", err
 	}
 
-	// 构建提示词：
-	// 1. 若有头像定制图，优先使用专属姿势+服装+头像融合提示词；
-	// 2. GPT-Image-2 专门使用防封控安全提示词；
-	// 3. Gemini 保留原英文稳定提示词；
-	// 4. 豆包等其他模型保留原提示词（按语言选择）。
-	var promptStr string
-	if hasAvatar {
-		promptStr = BuildPoseAvatarTryon(lang)
-	} else {
-		isGemini := (clientConfig != nil && strings.EqualFold(clientConfig.Provider, "gemini")) || gen.Name() == "gemini"
-		if isGPTImageModel(model, clientConfig, gen.Name()) {
-			promptStr = BuildGPTSafety(lang)
-		} else if isGemini {
-			promptStr = BuildGemini(lang)
-		} else {
-			promptStr = BuildDefault(lang)
-		}
-	}
+	// 构建高强度姿势保留提示词（全面支持 纯姿势、姿势+头像、姿势+服装、三合一）
+	promptStr := BuildPosePrompt(lang, hasGarment, hasAvatar)
 
 	// 调用生成
 	var result string
@@ -83,28 +69,32 @@ func DoTryonWithClientConfig(ctx context.Context, personB64, garmentB64, model, 
 	}
 	if err != nil {
 		// 不记录原始错误：网络错误可能包含用户自定义 Base URL，供应商响应也可能含敏感信息。
-		return "", "", "", gerror.Wrap(err, "换装生成失败，请稍后重试")
+		return "", "", "", gerror.Wrap(err, "生图生成失败，请稍后重试")
 	}
 
 	return result, gen.Name(), promptStr, nil
 }
 
-// DoTryonWithValidatedImages 使用已完成安全校验的图片结构执行换装
+// DoTryonWithValidatedImages 使用已完成安全校验的图片结构执行换装与姿势生图
 func DoTryonWithValidatedImages(ctx context.Context, personImg, garmentImg *imagevalidate.ValidatedImage, model, size, lang string, keepFace bool, clientConfig *ModelConfig, avatarImg ...*imagevalidate.ValidatedImage) (resultB64, usedModel, usedPrompt string, err error) {
 	if personImg == nil || len(personImg.Data) == 0 {
-		return "", "", "", gerror.New("人像照片不能为空")
-	}
-	if garmentImg == nil || len(garmentImg.Data) == 0 {
-		return "", "", "", gerror.New("服装图不能为空")
+		return "", "", "", gerror.New("姿势底图不能为空")
 	}
 
 	personB64 := base64.StdEncoding.EncodeToString(personImg.Data)
-	garmentB64 := base64.StdEncoding.EncodeToString(garmentImg.Data)
+
+	var garmentB64 string
+	if garmentImg != nil && len(garmentImg.Data) > 0 {
+		garmentB64 = base64.StdEncoding.EncodeToString(garmentImg.Data)
+	}
 
 	var avatarB64 string
 	if len(avatarImg) > 0 && avatarImg[0] != nil && len(avatarImg[0].Data) > 0 {
 		avatarB64 = base64.StdEncoding.EncodeToString(avatarImg[0].Data)
 	}
+
+	hasGarment := garmentB64 != ""
+	hasAvatar := avatarB64 != ""
 
 	if model == "" {
 		model = "gemini"
@@ -121,11 +111,14 @@ func DoTryonWithValidatedImages(ctx context.Context, personImg, garmentImg *imag
 	}
 
 	var promptStr string
-	if avatarB64 != "" {
+	if !keepFace {
+		// 姿势白模生图模式（默认）：强制 100% 绝对保留姿势与镜头视角
+		promptStr = BuildPosePrompt(lang, hasGarment, hasAvatar)
+	} else if hasGarment && hasAvatar {
+		promptStr = BuildPoseAvatarGarmentTryon(lang)
+	} else if hasAvatar {
 		promptStr = BuildPoseAvatarTryon(lang)
-	} else if !keepFace {
-		promptStr = BuildPoseTryon(lang)
-	} else {
+	} else if hasGarment {
 		isGemini := (clientConfig != nil && strings.EqualFold(clientConfig.Provider, "gemini")) || gen.Name() == "gemini"
 		if isGPTImageModel(model, clientConfig, gen.Name()) {
 			promptStr = BuildGPTSafety(lang)
@@ -134,16 +127,18 @@ func DoTryonWithValidatedImages(ctx context.Context, personImg, garmentImg *imag
 		} else {
 			promptStr = BuildDefault(lang)
 		}
+	} else {
+		promptStr = BuildPoseOnlyTryon(lang)
 	}
 
 	var result string
-	if avatarB64 != "" {
+	if hasAvatar {
 		result, err = gen.Generate(ctx, personB64, garmentB64, promptStr, size, avatarB64)
 	} else {
 		result, err = gen.Generate(ctx, personB64, garmentB64, promptStr, size)
 	}
 	if err != nil {
-		return "", "", "", gerror.Wrap(err, "换装生成失败，请稍后重试")
+		return "", "", "", gerror.Wrap(err, "生图生成失败，请稍后重试")
 	}
 
 	return result, gen.Name(), promptStr, nil

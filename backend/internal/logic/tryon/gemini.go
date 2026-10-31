@@ -84,7 +84,11 @@ func (g *Gemini) Generate(ctx context.Context, personB64, garmentB64, prompt, si
 	parts := []geminiPart{
 		{Text: prompt},
 		{InlineData: &geminiInlineData{MimeType: "image/png", Data: ensureBase64(personB64)}},
-		{InlineData: &geminiInlineData{MimeType: "image/png", Data: ensureBase64(garmentB64)}},
+	}
+	if strings.TrimSpace(garmentB64) != "" {
+		parts = append(parts, geminiPart{
+			InlineData: &geminiInlineData{MimeType: "image/png", Data: ensureBase64(garmentB64)},
+		})
 	}
 	if len(avatarB64) > 0 && strings.TrimSpace(avatarB64[0]) != "" {
 		parts = append(parts, geminiPart{

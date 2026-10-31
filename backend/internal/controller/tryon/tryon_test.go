@@ -199,6 +199,58 @@ func TestControllerTryonImageValidation(t *testing.T) {
 		b6, _ := io.ReadAll(resp6.Body)
 		t.Fatalf("expected 64x64 avatar to pass image validation, got 422: %s", string(b6))
 	}
+
+	// 7. 可选服装：省略服装（纯姿势生图），成功通过图片校验（状态码不应为 422）
+	poseOnlyReq := v1.TryonReq{
+		PersonImage: createTestPNG(300, 300),
+	}
+	poseOnlyBody, _ := json.Marshal(poseOnlyReq)
+	req7, _ := http.NewRequest(http.MethodPost, "http://127.0.0.1:"+port+"/tryon", bytes.NewReader(poseOnlyBody))
+	req7.Header.Set("Content-Type", "application/json")
+	resp7, err := client.Do(req7)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp7.Body.Close()
+	if resp7.StatusCode == 422 {
+		b7, _ := io.ReadAll(resp7.Body)
+		t.Fatalf("expected pose-only request to pass image validation, got 422: %s", string(b7))
+	}
+
+	// 8. 可选服装：省略服装但提供头像（姿势+头像生图），成功通过图片校验（状态码不应为 422）
+	poseAvatarReq := v1.TryonReq{
+		PersonImage: createTestPNG(300, 300),
+		AvatarImage: createTestPNG(64, 64),
+	}
+	poseAvatarBody, _ := json.Marshal(poseAvatarReq)
+	req8, _ := http.NewRequest(http.MethodPost, "http://127.0.0.1:"+port+"/tryon", bytes.NewReader(poseAvatarBody))
+	req8.Header.Set("Content-Type", "application/json")
+	resp8, err := client.Do(req8)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp8.Body.Close()
+	if resp8.StatusCode == 422 {
+		b8, _ := io.ReadAll(resp8.Body)
+		t.Fatalf("expected pose+avatar request to pass image validation, got 422: %s", string(b8))
+	}
+
+	// 9. 提供了服装但为非法 base64，应触发 422 校验失败
+	badGarmentReq := v1.TryonReq{
+		PersonImage:  createTestPNG(300, 300),
+		GarmentImage: "!!not-valid-base64!!",
+	}
+	badGarmentBody, _ := json.Marshal(badGarmentReq)
+	req9, _ := http.NewRequest(http.MethodPost, "http://127.0.0.1:"+port+"/tryon", bytes.NewReader(badGarmentBody))
+	req9.Header.Set("Content-Type", "application/json")
+	resp9, err := client.Do(req9)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp9.Body.Close()
+	if resp9.StatusCode != 422 {
+		t.Fatalf("expected 422 for bad garment, got %d", resp9.StatusCode)
+	}
 }
 
 func TestControllerTryonQuotaAndConcurrency(t *testing.T) {

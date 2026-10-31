@@ -185,19 +185,26 @@ func (c *ComfyUI) Generate(ctx context.Context, personB64, garmentB64, prompt, s
 	if err != nil {
 		return "", fmt.Errorf("人物图片格式错误")
 	}
-	garmentData, err := base64.StdEncoding.DecodeString(ensureBase64(garmentB64))
-	if err != nil {
-		return "", fmt.Errorf("服装图片格式错误")
-	}
-
 	runID := randomComfyID()
 	personName, err := c.uploadImage(ctx, "person-"+runID, personData)
 	if err != nil {
 		return "", err
 	}
-	garmentName, err := c.uploadImage(ctx, "garment-"+runID, garmentData)
-	if err != nil {
-		return "", err
+
+	hasGarment := strings.TrimSpace(garmentB64) != ""
+	var garmentName string
+	if hasGarment {
+		garmentData, err := base64.StdEncoding.DecodeString(ensureBase64(garmentB64))
+		if err != nil {
+			return "", fmt.Errorf("服装图片格式错误")
+		}
+		garmentName, err = c.uploadImage(ctx, "garment-"+runID, garmentData)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		// 无服装输入时平滑降级，复用姿势图占位防 ComfyUI 双图输入节点报错
+		garmentName = personName
 	}
 
 	workflow, err := c.loadWorkflow()
