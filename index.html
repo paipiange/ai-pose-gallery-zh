@@ -418,12 +418,35 @@ main{padding:22px 0 54px}
 .garment-tab.on{background:var(--surface);color:var(--accent);font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .garment-tab-pane{display:none}
 .garment-tab-pane.on{display:block}
+
+.garment-filter-bar{display:flex;gap:5px;overflow-x:auto;padding-bottom:6px;margin-bottom:8px;scrollbar-width:none;-ms-overflow-style:none}
+.garment-filter-bar::-webkit-scrollbar{display:none}
+.garment-cat-pill{border:1px solid var(--line-strong);border-radius:12px;padding:3px 8px;font-size:10.5px;font-weight:600;background:var(--surface-2);color:var(--text-2);cursor:pointer;white-space:nowrap;transition:all .14s ease}
+.garment-cat-pill:hover{border-color:var(--accent);color:var(--accent)}
+.garment-cat-pill.on{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 1px 3px rgba(91,91,214,.25)}
+
+.garment-search-box{display:flex;align-items:center;gap:6px;margin-bottom:10px;position:relative}
+.garment-search-box input{flex:1;height:32px;border:1px solid var(--line-strong);border-radius:8px;padding:0 26px 0 10px;font-size:11px;background:var(--surface);color:var(--text);outline:none;transition:border-color .15s}
+.garment-search-box input:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(91,91,214,.12)}
+.garment-search-clear{position:absolute;right:6px;width:20px;height:20px;border:0;background:transparent;color:var(--text-3);font-size:12px;cursor:pointer;display:grid;place-items:center}
+.garment-search-clear:hover{color:var(--text)}
+
 .garment-preset-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
 .garment-preset-card{position:relative;border:1.5px solid var(--line);border-radius:9px;overflow:hidden;cursor:pointer;background:var(--surface-2);aspect-ratio:3/4;transition:border-color .15s,transform .15s}
 .garment-preset-card:hover{border-color:#b9bfe0;transform:translateY(-2px)}
-.garment-preset-card.on{border-color:var(--accent);box-shadow:0 0 0 2px rgba(91,91,214,.3)}
+.garment-preset-card.on{border-color:var(--accent);box-shadow:0 0 0 2px rgba(91,91,214,.35)}
+.garment-preset-card.loading::after{content:"⏳";position:absolute;inset:0;background:rgba(255,255,255,.78);display:grid;place-items:center;font-size:14px;backdrop-filter:blur(1px)}
 .garment-preset-card img{width:100%;height:100%;object-fit:cover;display:block}
+.garment-preset-badge{position:absolute;top:3px;left:3px;padding:1px 4px;border-radius:4px;background:rgba(18,22,34,.72);color:#fff;font-size:8.5px;font-weight:700;line-height:1.15;pointer-events:none;backdrop-filter:blur(2px)}
 .garment-preset-title{position:absolute;bottom:0;left:0;right:0;padding:2px 4px;background:rgba(0,0,0,.68);color:#fff;font-size:9px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.garment-load-more-box{margin-top:10px;display:flex;flex-direction:column;gap:6px;align-items:center}
+.garment-load-more-btn{width:100%;height:35px;border:1px solid var(--accent);background:var(--accent-soft);color:var(--accent);border-radius:8px;font-size:11.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s ease}
+.garment-load-more-btn:hover:not(:disabled){background:var(--accent);color:#fff}
+.garment-load-more-btn:disabled{opacity:.65;cursor:not-allowed}
+.garment-stats-tip{font-size:10.5px;color:var(--text-3);text-align:center;line-height:1.4}
+.garment-stats-tip a{color:var(--accent);text-decoration:underline}
+
 .garment-dropzone{border:2px dashed var(--line-strong);border-radius:12px;padding:20px 14px;text-align:center;cursor:pointer;background:var(--surface-2);color:var(--text-3);transition:border-color .16s,background .16s}
 .garment-dropzone:hover,.garment-dropzone.dragover{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
 .garment-dropzone p{margin:6px 0 2px;font-size:12px;color:var(--text-2)}
@@ -811,14 +834,44 @@ main{padding:22px 0 54px}
           </div>
 
           <div class="garment-tabs">
-            <button type="button" class="garment-tab on" data-gtab="preset">经典女装推荐 (8款)</button>
+            <button type="button" class="garment-tab on" data-gtab="preset">搭配服装素材 (1407款)</button>
             <button type="button" class="garment-tab" data-gtab="upload">本地图片上传</button>
             <button type="button" class="garment-tab" data-gtab="url">图片网络链接</button>
           </div>
 
-          <!-- 预设列表 -->
+          <!-- 预设与图库列表 -->
           <div class="garment-tab-pane on" id="garmentPresetPane">
+            <!-- 分类筛选与搜索 -->
+            <div class="garment-filter-bar" id="garmentFilterBar">
+              <button type="button" class="garment-cat-pill on" data-cat="all">全部 (1407)</button>
+              <button type="button" class="garment-cat-pill" data-cat="rec">精选推荐 (8)</button>
+              <button type="button" class="garment-cat-pill" data-cat="春">春装 (215)</button>
+              <button type="button" class="garment-cat-pill" data-cat="夏">夏装 (254)</button>
+              <button type="button" class="garment-cat-pill" data-cat="秋">秋装 (244)</button>
+              <button type="button" class="garment-cat-pill" data-cat="冬">冬装 (253)</button>
+              <button type="button" class="garment-cat-pill" data-cat="ランジェリー">内衣 (199)</button>
+              <button type="button" class="garment-cat-pill" data-cat="パーティ">礼服 (48)</button>
+              <button type="button" class="garment-cat-pill" data-cat="水着">泳装 (54)</button>
+              <button type="button" class="garment-cat-pill" data-cat="セクシー">纯欲 (140)</button>
+            </div>
+            <div class="garment-search-box">
+              <input type="text" id="garmentSearchInput" placeholder="搜索款式或面料 (如 针织 / 碎花 / 吊带 / 连衣裙)" autocomplete="off">
+              <button type="button" class="garment-search-clear" id="garmentSearchClearBtn" title="清空搜索" hidden>✕</button>
+            </div>
+
+            <!-- 卡片网格 -->
             <div class="garment-preset-grid" id="garmentPresetGrid"></div>
+
+            <!-- 加载更多控制区 -->
+            <div class="garment-load-more-box" id="garmentLoadMoreBox">
+              <button type="button" class="garment-load-more-btn" id="garmentLoadMoreBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
+                <span>加载更多搭配服装 (探索 1407 款图库)</span>
+              </button>
+              <div class="garment-stats-tip" id="garmentStatsTip">
+                已展示 8 款经典推荐 · 图库共 1407 款 · 数据直连 <a href="https://github.com/paipiange/nvzhuang" target="_blank" rel="noopener">paipiange/nvzhuang</a>
+              </div>
+            </div>
           </div>
 
           <!-- 本地上传 -->
@@ -1537,14 +1590,14 @@ $('#infoDialog').addEventListener('click', event => { if (event.target === $('#i
    AI Pose Studio & Model Settings 逻辑实现
    ========================================================================== */
 const PRESET_GARMENTS = [
-  { id: 'SPR-0001', name: '法式针织短裙', file: 'presets/garments/SPR-0001.webp' },
-  { id: 'SPR-0002', name: '黄色碎花吊带连身裙', file: 'presets/garments/SPR-0002.webp' },
-  { id: 'SPR-0003', name: '西装衬衫百褶短裙', file: 'presets/garments/SPR-0003.webp' },
-  { id: 'SPR-0004', name: '米色工装风衣短裙', file: 'presets/garments/SPR-0004.webp' },
-  { id: 'SPR-0005', name: '优雅碎花过膝长裙', file: 'presets/garments/SPR-0005.webp' },
-  { id: 'SPR-0006', name: '高领针织裙配外套', file: 'presets/garments/SPR-0006.webp' },
-  { id: 'SPR-0007', name: '水蓝雪纺吊带百褶裙', file: 'presets/garments/SPR-0007.webp' },
-  { id: 'SPR-0008', name: '橄榄绿法式衬衫裙', file: 'presets/garments/SPR-0008.webp' }
+  { id: 'SPR-0001', name: '法式针织短裙', file: 'presets/garments/SPR-0001.webp', cat: '春', catZh: '春季' },
+  { id: 'SPR-0002', name: '黄色碎花吊带连身裙', file: 'presets/garments/SPR-0002.webp', cat: '春', catZh: '春季' },
+  { id: 'SPR-0003', name: '西装衬衫百褶短裙', file: 'presets/garments/SPR-0003.webp', cat: '春', catZh: '春季' },
+  { id: 'SPR-0004', name: '米色工装风衣短裙', file: 'presets/garments/SPR-0004.webp', cat: '春', catZh: '春季' },
+  { id: 'SPR-0005', name: '优雅碎花过膝长裙', file: 'presets/garments/SPR-0005.webp', cat: '春', catZh: '春季' },
+  { id: 'SPR-0006', name: '高领针织裙配外套', file: 'presets/garments/SPR-0006.webp', cat: '春', catZh: '春季' },
+  { id: 'SPR-0007', name: '水蓝雪纺吊带百褶裙', file: 'presets/garments/SPR-0007.webp', cat: '春', catZh: '春季' },
+  { id: 'SPR-0008', name: '橄榄绿法式衬衫裙', file: 'presets/garments/SPR-0008.webp', cat: '春', catZh: '春季' }
 ];
 
 const DEFAULT_SETTINGS = {
@@ -1811,34 +1864,316 @@ $('#studioChangePoseBtn').addEventListener('click', () => {
   window.scrollTo({ top: 380, behavior: 'smooth' });
 });
 
-// 渲染预设服装卡片
+// 拍片哥女装素材库 (1407款) 动态配置与翻译映射
+const NVZHUANG_CAT_MAP = {
+  '春': '春季', '夏': '夏季', '秋': '秋季', '冬': '冬季',
+  'ランジェリー': '居家内衣', 'パーティ': '晚装礼服', '水着': '泳装度假', 'セクシー': '轻熟纯欲'
+};
+
+const NVZHUANG_KW_ZH = {
+  'ivory':'米白','white':'白','black':'黑','red':'红','pink':'粉','blue':'蓝','navy':'藏青',
+  'brown':'棕','beige':'米色','grey':'灰','green':'绿','yellow':'黄','orange':'橙','purple':'紫',
+  'lavender':'薰衣草紫','mint':'薄荷绿','cream':'奶油白','gold':'金','silver':'银','khaki':'卡其',
+  'burgundy':'酒红','olive':'橄榄绿',
+  'dress':'连衣裙','skirt':'半身裙','jacket':'夹克','coat':'大衣','sweater':'毛衣','cardigan':'开衫',
+  'blouse':'衬衫','shirt':'衬衫','pants':'长裤','jeans':'牛仔裤','shorts':'短裤','boots':'短靴',
+  'sneakers':'球鞋','sandals':'凉鞋','heels':'高跟鞋','loafers':'乐福鞋','pumps':'单鞋',
+  'socks':'短袜','tights':'连裤袜','stockings':'丝袜','bag':'手袋','tote':'托特包','hat':'礼帽',
+  'beret':'贝雷帽','beanie':'针织帽','scarf':'围巾','muffler':'围巾','gloves':'手套','belt':'腰带',
+  'necklace':'项链','choker':'项圈','camisole':'吊带','bra':'文胸','briefs':'底裤',
+  'swimsuit':'泳装','bikini':'比基尼','hoodie':'卫衣','vest':'马甲','corset':'束腰','robe':'睡袍',
+  'turtleneck':'高领','sunglasses':'墨镜','headband':'发带','apron':'围裙',
+  'denim':'牛仔','lace':'蕾丝','satin':'缎面','leather':'皮革','knit':'针织','suede':'麂皮',
+  'fur':'毛领','velvet':'丝绒','wool':'羊毛','chiffon':'雪纺','tulle':'网纱','mesh':'网眼',
+  'corduroy':'灯芯绒','floral':'碎花','polka-dot':'波点','ribbon':'系带','frill':'荷叶边',
+  'pleated':'百褶','mini':'短款','midi':'中长款','maxi':'及地款'
+};
+
+function formatNvzhuangItem(raw) {
+  const preset = PRESET_GARMENTS.find(p => p.id === raw.id);
+  const cat = raw['カテゴリ'] || '春';
+  const catZh = NVZHUANG_CAT_MAP[cat] || cat;
+  let name = '';
+  if (preset) {
+    name = preset.name;
+  } else {
+    const words = (raw['キーワード'] || '').toLowerCase().split(/[\s,]+/);
+    const color = words.find(w => ['ivory','white','black','red','pink','blue','navy','brown','beige','grey','green','yellow','orange','purple','lavender','mint','cream','gold','silver','khaki','burgundy','olive'].includes(w));
+    const style = words.find(w => ['floral','pleated','polka-dot','lace','satin','knit','denim','velvet','corduroy','chiffon','frill','ribbon','mini','midi','maxi','leather','fur'].includes(w));
+    const main = words.find(w => ['dress','skirt','camisole','cardigan','shirt','blouse','jacket','coat','sweater','hoodie','vest','shorts','pants','jeans','swimsuit','corset','robe','bra'].includes(w));
+    const parts = [];
+    if (color && NVZHUANG_KW_ZH[color]) parts.push(NVZHUANG_KW_ZH[color]);
+    if (style && NVZHUANG_KW_ZH[style]) parts.push(NVZHUANG_KW_ZH[style]);
+    if (main && NVZHUANG_KW_ZH[main]) parts.push(NVZHUANG_KW_ZH[main]);
+    if (!parts.length) {
+      const fallbacks = words.filter(w => NVZHUANG_KW_ZH[w]).slice(0, 2).map(w => NVZHUANG_KW_ZH[w]);
+      if (fallbacks.length) parts.push(...fallbacks);
+    }
+    name = parts.length ? parts.join('') : `${catZh} ${raw.id}`;
+  }
+  return {
+    id: raw.id,
+    name,
+    cat,
+    catZh,
+    keywords: raw['キーワード'] || '',
+    localFile: preset ? preset.file : null,
+    thumbUrl: preset ? preset.file : `https://paipiange.github.io/nvzhuang/assets/thumbs/${raw.id}.webp`,
+    imgUrl: `https://paipiange.github.io/nvzhuang/assets/img/${raw.id}.webp`
+  };
+}
+
+const garmentGalleryState = {
+  allList: null,
+  currentList: [],
+  displayCount: 8,
+  pageSize: 24,
+  activeCat: 'all',
+  searchKeyword: '',
+  isLoading: false
+};
+
+function getGarmentById(gid) {
+  if (!gid) return null;
+  if (garmentGalleryState.allList) {
+    const found = garmentGalleryState.allList.find(x => x.id === gid);
+    if (found) return found;
+  }
+  const preset = PRESET_GARMENTS.find(p => p.id === gid);
+  if (preset) return { ...preset, catZh: preset.catZh || '精选推荐', thumbUrl: preset.file, localFile: preset.file };
+  return {
+    id: gid,
+    name: gid,
+    catZh: '女装素材',
+    localFile: null,
+    thumbUrl: `https://paipiange.github.io/nvzhuang/assets/thumbs/${gid}.webp`,
+    imgUrl: `https://paipiange.github.io/nvzhuang/assets/img/${gid}.webp`
+  };
+}
+
+async function fetchGarmentBase64(item) {
+  if (item.localFile) {
+    return await urlToBase64(item.localFile);
+  }
+  const urls = [
+    `https://paipiange.github.io/nvzhuang/assets/img/${item.id}.webp`,
+    `https://cdn.jsdelivr.net/gh/paipiange/nvzhuang@main/assets/img/${item.id}.webp`,
+    `https://paipiange.github.io/nvzhuang/assets/thumbs/${item.id}.webp`,
+    `https://cdn.jsdelivr.net/gh/paipiange/nvzhuang@main/assets/thumbs/${item.id}.webp`
+  ];
+  let lastErr = null;
+  for (const url of urls) {
+    try {
+      return await urlToBase64(url);
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+  throw lastErr || new Error(`加载服装图片失败: ${item.id}`);
+}
+
+async function loadNvzhuangDataset() {
+  if (garmentGalleryState.allList) return garmentGalleryState.allList;
+  garmentGalleryState.isLoading = true;
+  updateGarmentLoadMoreUI();
+
+  const urls = [
+    'https://paipiange.github.io/nvzhuang/data.js',
+    'https://cdn.jsdelivr.net/gh/paipiange/nvzhuang@main/data.js',
+    'https://raw.githubusercontent.com/paipiange/nvzhuang/main/data.js'
+  ];
+
+  let rawData = null;
+  for (const url of urls) {
+    try {
+      const resp = await fetch(url);
+      if (!resp.ok) continue;
+      const text = await resp.text();
+      try {
+        const fn = new Function(text + '; return typeof D !== "undefined" ? D : [];');
+        rawData = fn();
+      } catch {
+        const m = text.match(/const\s+D\s*=\s*(\[[\s\S]*?\]);/);
+        if (m) rawData = JSON.parse(m[1]);
+      }
+      if (Array.isArray(rawData) && rawData.length > 0) break;
+    } catch (e) {
+      console.warn('拉取拍片哥女装数据失败，尝试备用源:', url, e);
+    }
+  }
+
+  garmentGalleryState.isLoading = false;
+  if (!Array.isArray(rawData) || rawData.length === 0) {
+    updateGarmentLoadMoreUI();
+    throw new Error('无法连接拍片哥女装图库 API，请检查网络连接');
+  }
+
+  garmentGalleryState.allList = rawData.map(formatNvzhuangItem);
+  return garmentGalleryState.allList;
+}
+
+function applyGarmentFilters() {
+  const { activeCat, searchKeyword, allList } = garmentGalleryState;
+  const list = allList || PRESET_GARMENTS.map(p => ({
+    id: p.id,
+    name: p.name,
+    cat: p.cat || '春',
+    catZh: p.catZh || '精选推荐',
+    keywords: '',
+    localFile: p.file,
+    thumbUrl: p.file
+  }));
+
+  const kw = searchKeyword.trim().toLowerCase();
+  garmentGalleryState.currentList = list.filter(item => {
+    if (activeCat === 'rec') {
+      if (!item.localFile && !PRESET_GARMENTS.some(p => p.id === item.id)) return false;
+    } else if (activeCat !== 'all') {
+      if (item.cat !== activeCat) return false;
+    }
+    if (kw) {
+      const idMatch = item.id.toLowerCase().includes(kw);
+      const nameMatch = item.name.toLowerCase().includes(kw);
+      const kwMatch = (item.keywords || '').toLowerCase().includes(kw);
+      const catMatch = (item.catZh || '').toLowerCase().includes(kw);
+      if (!idMatch && !nameMatch && !kwMatch && !catMatch) return false;
+    }
+    return true;
+  });
+}
+
 function renderPresetGarments() {
-  $('#garmentPresetGrid').innerHTML = PRESET_GARMENTS.map(g => `
-    <div class="garment-preset-card" data-gid="${esc(g.id)}" title="${esc(g.name)}">
-      <img src="${esc(g.file)}" alt="${esc(g.name)}" loading="lazy">
+  const grid = $('#garmentPresetGrid');
+  if (!grid) return;
+  if (!garmentGalleryState.currentList.length) {
+    applyGarmentFilters();
+  }
+  const { currentList, displayCount } = garmentGalleryState;
+  const toRender = currentList.slice(0, displayCount);
+
+  if (toRender.length === 0) {
+    grid.innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;padding:26px 14px;color:var(--text-3);font-size:12px">
+        没有找到匹配的服装款式，试试换个关键词或分类
+      </div>
+    `;
+    updateGarmentLoadMoreUI();
+    return;
+  }
+
+  grid.innerHTML = toRender.map(g => `
+    <div class="garment-preset-card ${studioState.garmentPresetId === g.id ? 'on' : ''}" data-gid="${esc(g.id)}" title="${esc(g.name)} (${esc(g.id)})">
+      <span class="garment-preset-badge">${esc(g.catZh ? g.catZh.slice(0, 2) : '款')}</span>
+      <img src="${esc(g.thumbUrl)}" alt="${esc(g.name)}" loading="lazy" onerror="if(!this.dataset.triedJsd){this.dataset.triedJsd='1';this.src='https://cdn.jsdelivr.net/gh/paipiange/nvzhuang@main/assets/thumbs/${esc(g.id)}.webp';}">
       <span class="garment-preset-title">${esc(g.name)}</span>
     </div>
   `).join('');
+
+  updateGarmentLoadMoreUI();
+}
+
+function updateGarmentLoadMoreUI() {
+  const btn = $('#garmentLoadMoreBtn');
+  const tip = $('#garmentStatsTip');
+  if (!btn || !tip) return;
+
+  const { allList, currentList, displayCount, isLoading } = garmentGalleryState;
+  const total = currentList.length;
+  const hasMore = displayCount < total || !allList;
+
+  if (isLoading) {
+    btn.disabled = true;
+    btn.innerHTML = `
+      <span style="display:inline-block;animation:spin 1s linear infinite">⏳</span>
+      <span>正在加载拍片哥女装图库 (1407款)...</span>
+    `;
+    tip.textContent = '正在通过 API 动态同步远端服装素材库...';
+    return;
+  }
+
+  btn.disabled = false;
+  if (!allList) {
+    btn.style.display = 'flex';
+    btn.innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
+      <span>加载更多搭配服装 (探索 1407 款图库)</span>
+    `;
+    tip.innerHTML = `已展示 8 款经典推荐 · 图库共 1407 款 · 数据直连 <a href="https://github.com/paipiange/nvzhuang" target="_blank" rel="noopener">paipiange/nvzhuang</a>`;
+  } else if (hasMore) {
+    btn.style.display = 'flex';
+    const remaining = total - displayCount;
+    const nextBatch = Math.min(garmentGalleryState.pageSize, remaining);
+    btn.innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
+      <span>加载更多搭配服装 (+${nextBatch})</span>
+    `;
+    tip.innerHTML = `已展示 ${Math.min(displayCount, total)} / ${total} 款 · 数据直连 <a href="https://github.com/paipiange/nvzhuang" target="_blank" rel="noopener">paipiange/nvzhuang</a>`;
+  } else {
+    btn.style.display = 'none';
+    tip.innerHTML = `已展示全部 ${total} 款搭配服装 · 数据直连 <a href="https://github.com/paipiange/nvzhuang" target="_blank" rel="noopener">paipiange/nvzhuang</a>`;
+  }
+}
+
+async function handleGarmentLoadMore() {
+  if (garmentGalleryState.isLoading) return;
+  try {
+    if (!garmentGalleryState.allList) {
+      await loadNvzhuangDataset();
+      applyGarmentFilters();
+      garmentGalleryState.displayCount = 32;
+    } else {
+      garmentGalleryState.displayCount += garmentGalleryState.pageSize;
+    }
+    renderPresetGarments();
+  } catch (err) {
+    alert(err.message || '加载服装图库失败，请稍后重试');
+  }
+}
+
+async function handleGarmentCategoryChange(cat) {
+  garmentGalleryState.activeCat = cat;
+  document.querySelectorAll('.garment-cat-pill').forEach(btn => {
+    btn.classList.toggle('on', btn.dataset.cat === cat);
+  });
+
+  if (!garmentGalleryState.allList && cat !== 'rec') {
+    try {
+      await loadNvzhuangDataset();
+    } catch (err) {
+      alert(err.message || '加载服装图库失败，请检查网络');
+      return;
+    }
+  }
+
+  applyGarmentFilters();
+  garmentGalleryState.displayCount = garmentGalleryState.pageSize;
+  renderPresetGarments();
 }
 
 async function selectPresetGarment(gid) {
-  const g = PRESET_GARMENTS.find(item => item.id === gid);
+  const g = getGarmentById(gid);
   if (!g) return;
 
+  const card = document.querySelector(`.garment-preset-card[data-gid="${gid}"]`);
+  if (card) card.classList.add('loading');
+
   try {
-    const b64 = await urlToBase64(g.file);
+    const b64 = await fetchGarmentBase64(g);
     studioState.garmentBase64 = b64;
     studioState.garmentName = g.name;
-    studioState.garmentSource = '预设服装推荐';
+    studioState.garmentSource = g.localFile ? '预设推荐款' : `拍片哥女装图库 · ${g.catZh || '女装'}`;
     studioState.garmentPresetId = gid;
 
     document.querySelectorAll('.garment-preset-card').forEach(c => {
       c.classList.toggle('on', c.dataset.gid === gid);
     });
 
-    showSelectedGarmentBar(g.file, g.name, '预设推荐款');
+    showSelectedGarmentBar(g.thumbUrl || g.localFile, g.name, studioState.garmentSource);
   } catch (err) {
     console.error('加载预设服装失败:', err);
+    alert('加载服装高清图片失败，请检查网络后重试');
+  } finally {
+    if (card) card.classList.remove('loading');
   }
 }
 
@@ -1866,6 +2201,46 @@ $('#garmentPresetGrid').addEventListener('click', event => {
   const card = event.target.closest('.garment-preset-card');
   if (!card) return;
   selectPresetGarment(card.dataset.gid);
+});
+
+// 加载更多按钮点击
+$('#garmentLoadMoreBtn').addEventListener('click', handleGarmentLoadMore);
+
+// 分类筛选切换
+$('#garmentFilterBar').addEventListener('click', event => {
+  const pill = event.target.closest('.garment-cat-pill');
+  if (!pill) return;
+  handleGarmentCategoryChange(pill.dataset.cat);
+});
+
+// 搜索框输入与防抖
+let garmentSearchDebounce = null;
+$('#garmentSearchInput').addEventListener('input', e => {
+  const val = e.target.value.trim();
+  $('#garmentSearchClearBtn').hidden = !val;
+  clearTimeout(garmentSearchDebounce);
+  garmentSearchDebounce = setTimeout(async () => {
+    garmentGalleryState.searchKeyword = val;
+    if (val && !garmentGalleryState.allList) {
+      try {
+        await loadNvzhuangDataset();
+      } catch (err) {
+        console.warn('搜索时拉取全量数据失败:', err);
+      }
+    }
+    applyGarmentFilters();
+    garmentGalleryState.displayCount = garmentGalleryState.pageSize;
+    renderPresetGarments();
+  }, 250);
+});
+
+$('#garmentSearchClearBtn').addEventListener('click', () => {
+  $('#garmentSearchInput').value = '';
+  $('#garmentSearchClearBtn').hidden = true;
+  garmentGalleryState.searchKeyword = '';
+  applyGarmentFilters();
+  garmentGalleryState.displayCount = garmentGalleryState.pageSize;
+  renderPresetGarments();
 });
 
 // 服装 Tab 切换
@@ -2382,15 +2757,15 @@ async function loadHistoryRecord(item) {
 
   // 3. 恢复步骤 3：搭配服装
   if (item.hasGarment) {
-    const preset = PRESET_GARMENTS.find(g => (item.garmentPresetId && g.id === item.garmentPresetId) || (item.garmentName && g.name === item.garmentName));
-    if (preset) {
+    const preset = (item.garmentPresetId && getGarmentById(item.garmentPresetId)) || PRESET_GARMENTS.find(g => (item.garmentPresetId && g.id === item.garmentPresetId) || (item.garmentName && g.name === item.garmentName));
+    if (preset && (item.garmentPresetId || preset.id)) {
       await selectPresetGarment(preset.id);
     } else if (item.garmentBase64 || item.garmentThumb) {
       const gSrc = item.garmentBase64 || item.garmentThumb;
       studioState.garmentBase64 = gSrc;
       studioState.garmentName = item.garmentName || '历史搭配服装';
       studioState.garmentSource = item.garmentSource || '历史记录回填';
-      studioState.garmentPresetId = '';
+      studioState.garmentPresetId = item.garmentPresetId || '';
       document.querySelectorAll('.garment-preset-card').forEach(c => c.classList.remove('on'));
       showSelectedGarmentBar(gSrc, studioState.garmentName, studioState.garmentSource);
     } else {
