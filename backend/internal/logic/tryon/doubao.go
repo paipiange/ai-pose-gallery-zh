@@ -63,19 +63,24 @@ type doubaoData struct {
 	B64JSON string `json:"b64_json"`
 }
 
-func (d *Doubao) Generate(ctx context.Context, personB64, garmentB64, prompt, size string) (string, error) {
+func (d *Doubao) Generate(ctx context.Context, personB64, garmentB64, prompt, size string, avatarB64 ...string) (string, error) {
 	if d.apiKey == "" {
 		return "", fmt.Errorf("豆包 API Key 未配置（llm.models.%s.apiKey 或环境变量 ARK_API_KEY）", d.name)
 	}
 
+	images := []string{
+		"data:image/png;base64," + ensureBase64(personB64),
+		"data:image/png;base64," + ensureBase64(garmentB64),
+	}
+	if len(avatarB64) > 0 && strings.TrimSpace(avatarB64[0]) != "" {
+		images = append(images, "data:image/png;base64,"+ensureBase64(avatarB64[0]))
+	}
+
 	// 豆包多图生图用 data URL 传参考图
 	reqBody := doubaoRequest{
-		Model:  d.model,
-		Prompt: prompt,
-		Image: []string{
-			"data:image/png;base64," + ensureBase64(personB64),
-			"data:image/png;base64," + ensureBase64(garmentB64),
-		},
+		Model:          d.model,
+		Prompt:         prompt,
+		Image:          images,
 		Size:           normalizeDoubaoSize(size),
 		ResponseFormat: "url",
 	}

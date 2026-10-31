@@ -176,7 +176,7 @@ func (c *ComfyUI) Health(ctx context.Context) error {
 	return nil
 }
 
-func (c *ComfyUI) Generate(ctx context.Context, personB64, garmentB64, prompt, size string) (string, error) {
+func (c *ComfyUI) Generate(ctx context.Context, personB64, garmentB64, prompt, size string, avatarB64 ...string) (string, error) {
 	if err := c.Health(ctx); err != nil {
 		return "", err
 	}
@@ -213,6 +213,22 @@ func (c *ComfyUI) Generate(ctx context.Context, personB64, garmentB64, prompt, s
 	if err := setComfyInput(workflow, c.promptNode, "prompt", c.buildPrompt(prompt)); err != nil {
 		return "", err
 	}
+
+	hasAvatar := len(avatarB64) > 0 && strings.TrimSpace(avatarB64[0]) != ""
+	if hasAvatar {
+		avatarData, err := base64.StdEncoding.DecodeString(ensureBase64(avatarB64[0]))
+		if err != nil {
+			return "", fmt.Errorf("头像图片格式错误")
+		}
+		avatarName, err := c.uploadImage(ctx, "avatar-"+runID, avatarData)
+		if err != nil {
+			return "", err
+		}
+		if err := c.attachAvatarNode(workflow, avatarName); err != nil {
+			return "", err
+		}
+	}
+
 	if c.seedNode != "" {
 		seed := c.seed
 		if seed < 0 {
@@ -242,6 +258,45 @@ func (c *ComfyUI) Generate(ctx context.Context, personB64, garmentB64, prompt, s
 		return "", err
 	}
 	return base64.StdEncoding.EncodeToString(imageData), nil
+}
+
+// attachAvatarNode 动态在 ComfyUI 工作流中创建 LoadImage 头像节点，并连接到多图编码器（如 Qwen 的 image3）
+func (c *ComfyUI) attachAvatarNode(workflow map[string]interface{}, avatarName string) error {
+	maxID := 0
+	for k := range workflow {
+		var id int
+		if _, err := fmt.Sscanf(k, "%d", &id); err == nil && id > maxID {
+			maxID = id
+		}
+	}
+	avatarNodeID := fmt.Sprintf("%d", maxID+1)
+	workflow[avatarNodeID] = map[string]interface{}{
+		"class_type": "LoadImage",
+		"inputs": map[string]interface{}{
+			"image": avatarName,
+		},
+	}
+
+	// 遍历查找支持第三参考图的节点进行连接
+	for _, rawNode := range workflow {
+		nodeMap, ok := rawNode.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		classType, _ := nodeMap["class_type"].(string)
+		inputs, ok := nodeMap["inputs"].(map[string]interface{})
+		if !ok {
+			continue
+		}
+
+		switch classType {
+		case "TextEncodeQwenImageEditPlus":
+			inputs["image3"] = []interface{}{avatarNodeID, 0}
+		case "MiniMaxH3ReferenceToVideo":
+			inputs["ref_images.ref_image_2"] = []interface{}{avatarNodeID, 0}
+		}
+	}
+	return nil
 }
 
 func (c *ComfyUI) uploadImage(ctx context.Context, prefix string, data []byte) (string, error) {

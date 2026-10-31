@@ -6,6 +6,7 @@ package tryon
 
 import (
 	"context"
+	"strings"
 
 	"github.com/gogf/gf/v2/net/ghttp"
 
@@ -36,6 +37,21 @@ func (c *ControllerV1) Tryon(ctx context.Context, req *v1.TryonReq) (res *v1.Try
 		}
 		middleware.WriteAPIError(r, security.ErrInvalidImageBase64)
 		return nil, nil
+	}
+
+	// 1.1 若传递了可选头像/人脸参考图，同样严格校验其格式、大小与像素
+	var avatarImg *imagevalidate.ValidatedImage
+	if strings.TrimSpace(req.AvatarImage) != "" {
+		var aErr error
+		avatarImg, aErr = imagevalidate.ValidateImage(req.AvatarImage, imgLimits)
+		if aErr != nil {
+			if apiErr, ok := aErr.(*security.APIError); ok {
+				middleware.WriteAPIError(r, apiErr)
+				return nil, nil
+			}
+			middleware.WriteAPIError(r, security.ErrInvalidImageBase64)
+			return nil, nil
+		}
 	}
 
 	// 2. 检查并原子扣减每日调用额度
@@ -81,6 +97,7 @@ func (c *ControllerV1) Tryon(ctx context.Context, req *v1.TryonReq) (res *v1.Try
 		req.Lang,
 		keepFace,
 		clientConfig,
+		avatarImg,
 	)
 	if err != nil {
 		return nil, err

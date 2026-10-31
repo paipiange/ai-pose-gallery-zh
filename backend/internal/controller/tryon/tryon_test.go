@@ -132,6 +132,24 @@ func TestControllerTryonImageValidation(t *testing.T) {
 	if res3.Code != 42204 || res3.Data.ErrorCode != "IMAGE_DIMENSIONS_INVALID" {
 		t.Fatalf("unexpected res3: %+v", res3)
 	}
+
+	// 4. 可选头像：头像非合法图片时报错
+	badAvatarReq := v1.TryonReq{
+		PersonImage:  createTestPNG(300, 300),
+		GarmentImage: createTestPNG(300, 300),
+		AvatarImage:  "data:image/png;base64,invalid-avatar-b64",
+	}
+	badAvatarBody, _ := json.Marshal(badAvatarReq)
+	req4, _ := http.NewRequest(http.MethodPost, "http://127.0.0.1:"+port+"/tryon", bytes.NewReader(badAvatarBody))
+	req4.Header.Set("Content-Type", "application/json")
+	resp4, err := client.Do(req4)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp4.Body.Close()
+	if resp4.StatusCode != 422 {
+		t.Fatalf("expected 422, got %d", resp4.StatusCode)
+	}
 }
 
 func TestControllerTryonQuotaAndConcurrency(t *testing.T) {

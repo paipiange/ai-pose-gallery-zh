@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -106,6 +107,94 @@ func TestComfyUIGenerateFixedWorkflow(t *testing.T) {
 	}
 	if string(decoded) != "generated-image" {
 		t.Fatalf("unexpected image result: %q", decoded)
+	}
+}
+
+func TestComfyUIGenerateWithAvatar(t *testing.T) {
+	workflow := map[string]interface{}{
+		"1": map[string]interface{}{"class_type": "LoadImage", "inputs": map[string]interface{}{"image": "person"}},
+		"2": map[string]interface{}{"class_type": "LoadImage", "inputs": map[string]interface{}{"image": "garment"}},
+		"3": map[string]interface{}{"class_type": "TextEncodeQwenImageEditPlus", "inputs": map[string]interface{}{"prompt": "placeholder", "image1": []interface{}{"1", 0}, "image2": []interface{}{"2", 0}}},
+		"4": map[string]interface{}{"class_type": "SaveImage", "inputs": map[string]interface{}{"filename_prefix": "tryon"}},
+	}
+	workflowData, err := json.Marshal(workflow)
+	if err != nil {
+		t.Fatal(err)
+	}
+	workflowPath := filepath.Join(t.TempDir(), "workflow_avatar.json")
+	if err := os.WriteFile(workflowPath, workflowData, 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	var uploads atomic.Int32
+	var capturedWorkflow map[string]interface{}
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.URL.Path == "/system_stats":
+			_, _ = io.WriteString(w, `{}`)
+		case r.URL.Path == "/object_info":
+			_, _ = io.WriteString(w, `{"LoadImage":{},"TextEncodeQwenImageEditPlus":{},"SaveImage":{}}`)
+		case r.URL.Path == "/upload/image":
+			count := uploads.Add(1)
+			w.Header().Set("Content-Type", "application/json")
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{"name": fmt.Sprintf("upload-%d.png", count), "type": "input"})
+		case r.URL.Path == "/prompt":
+			var request comfyPromptRequest
+			_ = json.NewDecoder(r.Body).Decode(&request)
+			capturedWorkflow = request.Prompt
+			_, _ = io.WriteString(w, `{"prompt_id":"prompt-avatar-1","node_errors":{}}`)
+		case r.URL.Path == "/history/prompt-avatar-1":
+			_, _ = io.WriteString(w, `{"prompt-avatar-1":{"outputs":{"4":{"images":[{"filename":"result_avatar.png","subfolder":"","type":"output"}]}},"status":{"completed":true,"status_str":"success"}}}`)
+		case r.URL.Path == "/view":
+			w.Header().Set("Content-Type", "image/png")
+			_, _ = w.Write([]byte("avatar-result-image"))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer server.Close()
+
+	adapter := NewComfyUI(&ModelConfig{
+		Name:           "comfyui",
+		Provider:       "comfyui",
+		BaseURL:        server.URL,
+		Model:          "test-avatar-workflow",
+		WorkflowPath:   workflowPath,
+		PersonNode:     "1",
+		GarmentNode:    "2",
+		PromptNode:     "3",
+		OutputNode:     "4",
+		PollInterval:   time.Millisecond,
+		RequestTimeout: time.Second,
+	})
+
+	input := base64.StdEncoding.EncodeToString([]byte("input-img"))
+	avatarInput := base64.StdEncoding.EncodeToString([]byte("avatar-img"))
+
+	result, err := adapter.Generate(context.Background(), input, input, "fashion try-on", "1024x1536", avatarInput)
+	if err != nil {
+		t.Fatalf("Generate with avatar returned error: %v", err)
+	}
+
+	if uploads.Load() != 3 {
+		t.Fatalf("expected 3 uploads (person, garment, avatar), got %d", uploads.Load())
+	}
+
+	// 验证工作流中动态添加了头像 LoadImage 节点，并将 image3 连入 TextEncodeQwenImageEditPlus
+	node3Inputs := capturedWorkflow["3"].(map[string]interface{})["inputs"].(map[string]interface{})
+	image3Ref, ok := node3Inputs["image3"].([]interface{})
+	if !ok {
+		t.Fatalf("expected image3 input in TextEncodeQwenImageEditPlus node, got: %+v", node3Inputs)
+	}
+	avatarNodeID := image3Ref[0].(string)
+	avatarNode, ok := capturedWorkflow[avatarNodeID].(map[string]interface{})
+	if !ok || avatarNode["class_type"] != "LoadImage" {
+		t.Fatalf("expected avatar node %s to be LoadImage, got: %+v", avatarNodeID, avatarNode)
+	}
+
+	decoded, _ := base64.StdEncoding.DecodeString(result)
+	if string(decoded) != "avatar-result-image" {
+		t.Fatalf("unexpected result: %s", decoded)
 	}
 }
 

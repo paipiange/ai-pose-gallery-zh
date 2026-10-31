@@ -426,7 +426,21 @@ main{padding:22px 0 54px}
 .selected-garment-meta small{color:var(--text-3);font-size:10px}
 .remove-garment-btn{width:24px;height:24px;border:0;border-radius:50%;background:rgba(0,0,0,.08);cursor:pointer;display:grid;place-items:center;font-size:11px}
 
-/* 步骤 3 参数 */
+/* 步骤 3 头像定制 */
+.avatar-dropzone{border:2px dashed var(--line-strong);border-radius:12px;padding:16px 12px;text-align:center;cursor:pointer;background:var(--surface-2);color:var(--text-3);transition:border-color .16s,background .16s}
+.avatar-dropzone:hover,.avatar-dropzone.dragover{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.avatar-dropzone p{margin:6px 0 2px;font-size:12px;color:var(--text-2)}
+.avatar-dropzone span{font-size:10px}
+.avatar-actions-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px}
+.selected-avatar-bar{display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:10px;background:rgba(91,91,214,.07);border:1px solid rgba(91,91,214,.22)}
+.selected-avatar-bar img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);box-shadow:0 2px 8px rgba(91,91,214,.25)}
+.selected-avatar-meta{flex:1;min-width:0;line-height:1.35}
+.selected-avatar-meta strong{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.selected-avatar-meta small{color:var(--text-3);font-size:10px}
+.remove-avatar-btn{width:24px;height:24px;border:0;border-radius:50%;background:rgba(0,0,0,.08);cursor:pointer;display:grid;place-items:center;font-size:11px;transition:background .15s,color .15s}
+.remove-avatar-btn:hover{background:rgba(200,30,30,.15);color:#c81e1e}
+
+/* 步骤 4 参数 */
 .studio-param-grid{display:grid;gap:10px}
 .param-field label{display:block;font-size:11px;font-weight:700;color:var(--text-2);margin-bottom:4px}
 .channel-status{height:40px;display:flex;align-items:center;gap:8px;padding:0 12px;border:1px solid var(--line-strong);border-radius:10px;background:var(--surface-2);font-size:12px}
@@ -796,10 +810,51 @@ main{padding:22px 0 54px}
           </div>
         </section>
 
-        <!-- 步骤 3：模型与参数配置 -->
+        <!-- 步骤 3：人物头像 / 人脸定制（可选） -->
         <section class="studio-step-card">
           <div class="step-head">
             <span class="step-num">3</span>
+            <div>
+              <h3>人物头像 / 人脸参考 <span class="badge badge-sub" style="font-size:10px;margin-left:4px">可选</span></h3>
+              <p class="step-desc">定制面部神态与发型；未添加时默认生成写实模特面部</p>
+            </div>
+          </div>
+
+          <!-- 未添加头像时的区域 -->
+          <div class="avatar-dropzone" id="avatarDropzone">
+            <input type="file" id="avatarFileInput" accept="image/png,image/jpeg,image/webp" hidden>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <p><strong>点击选择头像</strong> 或 <strong>直接 Ctrl+V 粘贴</strong></p>
+            <span>支持拖拽图片到此处，格式支持 PNG / JPG / WEBP</span>
+            <div class="avatar-actions-row">
+              <button type="button" class="studio-sub-btn" id="pasteAvatarBtn">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                <span>读取剪贴板图片</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 已添加头像时的回显 -->
+          <div class="selected-avatar-bar" id="selectedAvatarBar" hidden>
+            <img id="selectedAvatarImg" src="" alt="已选头像">
+            <div class="selected-avatar-meta">
+              <div style="display:flex;align-items:center;gap:6px">
+                <strong id="selectedAvatarName">已选头像</strong>
+                <span class="badge badge-primary" style="font-size:9px">已启用面容复刻</span>
+              </div>
+              <small id="selectedAvatarSource">剪贴板粘贴</small>
+            </div>
+            <button type="button" class="remove-avatar-btn" id="removeAvatarBtn" title="清除头像（恢复默认模特面容）">✕</button>
+          </div>
+        </section>
+
+        <!-- 步骤 4：模型与参数配置 -->
+        <section class="studio-step-card">
+          <div class="step-head">
+            <span class="step-num">4</span>
             <div>
               <h3>生图模型与参数</h3>
               <p class="step-desc">选择 AI 绘画推理后端与画布比例</p>
@@ -1613,6 +1668,9 @@ const studioState = {
   garmentBase64: '',
   garmentName: '',
   garmentSource: '',
+  avatarBase64: '',
+  avatarName: '',
+  avatarSource: '',
   isGenerating: false,
   timerId: null,
   startTime: 0,
@@ -1635,6 +1693,11 @@ async function executeStudioGenerate(poseImgUrl, garmentBase64, options = {}) {
     keep_face: false,              // 姿势是白模素体，无需保持原人脸
     lang: options.lang || 'zh'
   };
+
+  // 可选定制头像
+  if (options.avatarBase64) {
+    payload.avatar_image = options.avatarBase64;
+  }
 
   // 3. 附带前端自定义模型配置（如有启用，非离线 ComfyUI 时透传）
   if (options.model !== 'comfyui' && settings.useCustom && settings.apiKey && settings.provider) {
@@ -1880,6 +1943,131 @@ $('#loadGarmentUrlBtn').addEventListener('click', async () => {
   }
 });
 
+// ==================== 头像参考图交互与剪贴板支持 ====================
+const avatarDropzone = $('#avatarDropzone');
+const avatarFileInput = $('#avatarFileInput');
+
+avatarDropzone.addEventListener('click', e => {
+  if (e.target.closest('#pasteAvatarBtn')) return;
+  avatarFileInput.click();
+});
+
+avatarDropzone.addEventListener('dragover', e => {
+  e.preventDefault();
+  avatarDropzone.classList.add('dragover');
+});
+avatarDropzone.addEventListener('dragleave', () => avatarDropzone.classList.remove('dragover'));
+avatarDropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  avatarDropzone.classList.remove('dragover');
+  if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+    handleAvatarFile(e.dataTransfer.files[0], '本地拖拽上传');
+  }
+});
+
+avatarFileInput.addEventListener('change', () => {
+  if (avatarFileInput.files && avatarFileInput.files[0]) {
+    handleAvatarFile(avatarFileInput.files[0], '本地文件上传');
+  }
+});
+
+function handleAvatarFile(file, sourceLabel) {
+  const isImageMime = file.type && file.type.startsWith('image/');
+  const isImageExt = file.name && /\.(jpe?g|png|webp)$/i.test(file.name);
+  if (!isImageMime && !isImageExt && file.type !== 'application/octet-stream') {
+    alert('请选择有效的图片文件 (PNG / JPG / WEBP)');
+    return;
+  }
+  let targetType = file.type;
+  if (!targetType || targetType === 'application/octet-stream' || targetType === 'image/jpg') {
+    const nameLower = (file.name || '').toLowerCase();
+    if (nameLower.endsWith('.webp')) targetType = 'image/webp';
+    else if (nameLower.endsWith('.png')) targetType = 'image/png';
+    else if (nameLower.endsWith('.jpg') || nameLower.endsWith('.jpeg')) targetType = 'image/jpeg';
+    else targetType = 'image/png';
+  }
+  const blobToRead = (targetType && targetType !== file.type) ? new Blob([file], { type: targetType }) : file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const dataUrl = e.target.result;
+    studioState.avatarBase64 = dataUrl;
+    studioState.avatarName = file.name || '定制人像';
+    studioState.avatarSource = sourceLabel || '头像参考';
+    showSelectedAvatarBar(dataUrl, studioState.avatarName, studioState.avatarSource);
+  };
+  reader.readAsDataURL(blobToRead);
+}
+
+function showSelectedAvatarBar(thumbUrl, name, source) {
+  $('#avatarDropzone').hidden = true;
+  const bar = $('#selectedAvatarBar');
+  bar.hidden = false;
+  $('#selectedAvatarImg').src = thumbUrl;
+  $('#selectedAvatarName').textContent = name;
+  $('#selectedAvatarSource').textContent = source;
+}
+
+function removeSelectedAvatar() {
+  studioState.avatarBase64 = '';
+  studioState.avatarName = '';
+  studioState.avatarSource = '';
+  $('#avatarFileInput').value = '';
+  $('#selectedAvatarBar').hidden = true;
+  $('#avatarDropzone').hidden = false;
+}
+
+$('#removeAvatarBtn').addEventListener('click', removeSelectedAvatar);
+
+// 剪贴板一键读取按钮
+$('#pasteAvatarBtn').addEventListener('click', async e => {
+  e.stopPropagation();
+  if (!navigator.clipboard || !navigator.clipboard.read) {
+    alert('当前浏览器环境暂未开放剪贴板读取，请直接按键盘快捷键 Ctrl + V 粘贴图片！');
+    return;
+  }
+  try {
+    const items = await navigator.clipboard.read();
+    let found = false;
+    for (const item of items) {
+      const imgType = item.types.find(t => t.startsWith('image/'));
+      if (imgType) {
+        const blob = await item.getType(imgType);
+        handleAvatarFile(blob, '剪贴板一键粘贴');
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      alert('剪贴板中未找到图片，请先截图或复制图片后再试！');
+    }
+  } catch (err) {
+    console.warn('读取剪贴板受限:', err);
+    alert('读取剪贴板权限受限，请直接在页面按快捷键 Ctrl + V 粘贴！');
+  }
+});
+
+// 全局监听 Ctrl + V 粘贴（当生图工坊抽屉打开时）
+window.addEventListener('paste', e => {
+  const drawer = $('#studioDrawer');
+  if (!drawer || drawer.hidden) return;
+
+  const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+  if (activeTag === 'input' || activeTag === 'textarea') return;
+
+  const items = e.clipboardData && e.clipboardData.items;
+  if (!items) return;
+  for (let i = 0; i < items.length; i++) {
+    if (items[i].type.indexOf('image') !== -1) {
+      const file = items[i].getAsFile();
+      if (file) {
+        e.preventDefault();
+        handleAvatarFile(file, '剪贴板快捷粘贴 (Ctrl+V)');
+        break;
+      }
+    }
+  }
+});
+
 // 执行生成
 $('#studioGenerateBtn').addEventListener('click', async () => {
   if (studioState.isGenerating) return;
@@ -1911,7 +2099,7 @@ $('#studioGenerateBtn').addEventListener('click', async () => {
   $('#studioElapsed').textContent = '0.0';
 
   const loadingTitles = [
-    '正在解析人体姿态骨架…',
+    studioState.avatarBase64 ? '正在解析人体姿态骨架与人脸神韵…' : '正在解析人体姿态骨架…',
     '正在提取服装剪裁与面料纹理…',
     '正在多模态融合受力与自然褶皱…',
     '正在渲染超高分辨率商业光影与细节…'
@@ -1936,6 +2124,7 @@ $('#studioGenerateBtn').addEventListener('click', async () => {
 
   try {
     const resData = await executeStudioGenerate(studioState.item.原图, studioState.garmentBase64, {
+      avatarBase64: studioState.avatarBase64 || '',
       model,
       size,
       lang
@@ -1963,6 +2152,8 @@ $('#studioGenerateBtn').addEventListener('click', async () => {
       poseName: studioState.group.name,
       angle: studioState.item.角度,
       poseThumb: studioState.item.缩略图,
+      hasAvatar: !!studioState.avatarBase64,
+      avatarThumb: studioState.avatarBase64 || '',
       resultImage: imgSrc,
       prompt: resData.prompt || '',
       model: resData.model || model,
@@ -2049,7 +2240,7 @@ async function renderHistoryList() {
         <img src="${item.resultImage}" alt="${esc(item.poseName)}">
       </div>
       <div class="history-item-meta">
-        <strong>${esc(item.poseName)} · ${esc(item.angle)}</strong>
+        <strong>${esc(item.poseName)} · ${esc(item.angle)}${item.hasAvatar ? ' <span class="badge badge-sub" style="font-size:9px">定制面容</span>' : ''}</strong>
         <span>${esc(item.timestamp)}</span>
       </div>
     </div>

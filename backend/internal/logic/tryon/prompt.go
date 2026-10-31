@@ -9,6 +9,36 @@ func BuildPoseTryon(lang string) string {
 	return poseTryonEnPrompt
 }
 
+// BuildPoseAvatarTryon 构建姿势骨架 + 服装 + 头像参考三合一生图专用提示词
+func BuildPoseAvatarTryon(lang string) string {
+	if lang == "zh" {
+		return poseAvatarTryonZhPrompt
+	}
+	return poseAvatarTryonEnPrompt
+}
+
+// poseAvatarTryonEnPrompt 姿势引导换装+头像定制英文提示词
+const poseAvatarTryonEnPrompt = `Task: Professional fashion editorial photograph generated from a 3D pose reference, a garment photo, and an avatar face reference.
+
+Strict Requirements:
+1. Pose & Angle Transfer: Faithfully follow the exact pose, body orientation, limb positioning, camera angle, and perspective shown in Image 1 (the wireframe/mannequin pose reference).
+2. Facial Identity & Avatar Reproduction: Faithfully transfer the face, facial features, eyes, skin tone, facial expression, and identity of the person shown in Image 3 (the avatar / face reference) onto the model. Seamlessly integrate the head and neck with the body pose, maintaining realistic skin texture and anatomically accurate proportions.
+3. Wardrobe: Dress the model in the exact garment and accessories shown in Image 2. Reproduce the colors, fabrics, drape, textures, neckline, and tailored silhouette faithfully.
+4. Lighting & Environment: Professional studio editorial lighting, clean neutral backdrop, shallow depth of field, 8k resolution, ultra-detailed fashion magazine standard.
+
+Output: ONLY the final dressed-up fashion photograph.`
+
+// poseAvatarTryonZhPrompt 姿势引导换装+头像定制中文提示词
+const poseAvatarTryonZhPrompt = `任务：基于人体姿势参考、服装设计图及人物头像参考，生成专业商业时尚写实人像大片。
+
+严格要求：
+1. 姿态与视角迁移：严格还原图 1（人体姿势参考素体）中的身体姿态、四肢摆放、躯干朝向、透视关系以及拍摄视角（正面/俯视/仰视/侧面/斜侧）。
+2. 人物人脸与身份复刻：精准复刻图 3（头像/人脸参考图）中的人物五官特征、脸型轮廓、神态气质与肤色质感，将该头像自然无缝地融合到姿势模特的头部，头部朝向与光影同身体姿势完美契合。
+3. 服装精准着装：让模特完整穿上图 2 中的服装，忠实还原服装的剪裁款式、面料质感、褶皱受力与颜色细节。
+4. 商业画质：采用高级商业影棚布光，干净明亮的中性背景，8K 超高细节与写实质感。
+
+输出：仅输出最终的高清着装合成人像照片。`
+
 // poseTryonEnPrompt 姿势引导换装专用英文提示词（效果最佳）
 const poseTryonEnPrompt = `Task: Professional fashion editorial photograph generated from a 3D pose reference and a garment photo.
 

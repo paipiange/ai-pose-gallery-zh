@@ -14,8 +14,8 @@ import (
 
 // ImageGenerator 图像生成模型适配器接口
 type ImageGenerator interface {
-	// Generate 生成换装图。入参为两张图的 base64（人像 + 服装），返回结果图 base64
-	Generate(ctx context.Context, personB64, garmentB64, prompt, size string) (string, error)
+	// Generate 生成换装/姿势生图。入参为姿势底图与服装的 base64，支持可选头像 avatarB64，返回结果图 base64
+	Generate(ctx context.Context, personB64, garmentB64, prompt, size string, avatarB64 ...string) (string, error)
 	// Name 模型别名（对外暴露的名称）
 	Name() string
 }

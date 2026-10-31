@@ -176,3 +176,22 @@ func TestOpenAIImagesVisualFallback(t *testing.T) {
 		t.Errorf("expected empty description on network failure, got: %s", desc)
 	}
 }
+
+func TestPoseAvatarPromptAndTryon(t *testing.T) {
+	// 验证头像专属提示词
+	enPrompt := BuildPoseAvatarTryon("en")
+	if !strings.Contains(enPrompt, "avatar face reference") {
+		t.Fatalf("expected enPrompt to contain avatar face reference, got: %s", enPrompt)
+	}
+	zhPrompt := BuildPoseAvatarTryon("zh")
+	if !strings.Contains(zhPrompt, "头像/人脸参考图") {
+		t.Fatalf("expected zhPrompt to contain 头像/人脸参考图, got: %s", zhPrompt)
+	}
+
+	validB64 := "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+	// 当传入非法头像 Base64 时报错拦截
+	_, _, _, err := DoTryon(context.Background(), validB64, validB64, "gemini", "1024x1536", "zh", "!!bad-avatar-b64!!")
+	if err == nil || !strings.Contains(err.Error(), "头像参考图 base64 格式错误") {
+		t.Fatalf("expected avatar base64 error, got: %v", err)
+	}
+}

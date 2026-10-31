@@ -76,20 +76,27 @@ type geminiError struct {
 	Code    int    `json:"code"`
 }
 
-func (g *Gemini) Generate(ctx context.Context, personB64, garmentB64, prompt, size string) (string, error) {
+func (g *Gemini) Generate(ctx context.Context, personB64, garmentB64, prompt, size string, avatarB64 ...string) (string, error) {
 	if g.apiKey == "" {
 		return "", fmt.Errorf("Gemini API key not configured")
+	}
+
+	parts := []geminiPart{
+		{Text: prompt},
+		{InlineData: &geminiInlineData{MimeType: "image/png", Data: ensureBase64(personB64)}},
+		{InlineData: &geminiInlineData{MimeType: "image/png", Data: ensureBase64(garmentB64)}},
+	}
+	if len(avatarB64) > 0 && strings.TrimSpace(avatarB64[0]) != "" {
+		parts = append(parts, geminiPart{
+			InlineData: &geminiInlineData{MimeType: "image/png", Data: ensureBase64(avatarB64[0])},
+		})
 	}
 
 	reqBody := geminiRequest{
 		Contents: []geminiContent{
 			{
-				Role: "user",
-				Parts: []geminiPart{
-					{Text: prompt},
-					{InlineData: &geminiInlineData{MimeType: "image/png", Data: ensureBase64(personB64)}},
-					{InlineData: &geminiInlineData{MimeType: "image/png", Data: ensureBase64(garmentB64)}},
-				},
+				Role:  "user",
+				Parts: parts,
 			},
 		},
 		GenerationConfig: &geminiGenConfig{
