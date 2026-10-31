@@ -1,8 +1,28 @@
-# 拍片哥 · AI 姿势参考库与生图工坊 (AI Pose Gallery & Studio)
+# 拍片哥 · AI 姿势参考库与生图工坊 (Paipiange AI Pose Studio)
 
-> 288 组 / 1439 张 AI 人体姿势参考图，日文数据完整汉化，全新集成本地与多云端 **拍片哥 AI 姿势生图与试穿工坊**，附可直接部署的响应式画廊。
+> 🌟 **拍片哥 (@paipiange)** 打造的专业级 AI 姿势控图、商拍出片与智能试穿工作流！  
+> 收录 288 组 / 1439 张 900×1200 超清多角度人体姿势骨架，独家支持 **100% 绝对姿势构图锁定、定制人像面容复刻、真实服装质感试穿**，打通本地 ComfyUI 离线显卡生图与主流云端大模型。
 
-## 🎬 姿势参考 + 人物参考 → AI 生成结果
+**🌐 拍片哥在线预览体验：** <https://paipiange.github.io/ai-pose-gallery-zh/>  
+**💻 GitHub 源码仓库：** <https://github.com/paipiange/ai-pose-gallery-zh>  
+**👤 核心作者 / 维护者：** 拍片哥 · [GitHub @paipiange](https://github.com/paipiange)
+
+---
+
+## 👨‍🎨 关于拍片哥 (About @paipiange)
+
+**拍片哥**（GitHub: [@paipiange](https://github.com/paipiange)），专注于 **AI 商业摄影、数字人写真、多模态控图算法与创意视觉管线** 的研发与实践。
+
+在日常商业摄影出片与 AI 视觉创作中，创作者们最常遇到的核心难题就是：
+- **盲盒抽卡**：身体动作扭曲、肢体骨折失真、心仪的机位与视角屡抽不中；
+- **面容漂移**：换个动作人脸就走形变样，极难保持模特面部一致性；
+- **衣物假面**：传统换装贴图生硬，布料褶皱无法与人体姿态及重力受力自然贴合。
+
+为了彻底解决这一痛点，拍片哥结合专业摄影棚的人体构图力学与商拍实践，基于开源社区优秀成果完成全量姿势骨架的落地与精准汉化，并深度自主研发了 **拍片哥 AI 姿势生图与试穿工坊 (Pose AI Studio)** —— 让每一个创作者、电商商家与摄影爱好者，都能像掌控专业影棚机位一样：**选中任意姿势骨架，锁定镜头视角，精准融合目标人脸与服饰，一键直出摄影级商拍大片！**
+
+---
+
+## 🎬 拍片哥 AI 工坊实测：姿势骨架 + 人物参考 → 商业写真大片
 
 选择姿势骨架控制动作与构图，再上传人物/服装参考，即可生成同时保留目标姿势、人物面容与穿搭特征的完整图片。
 
@@ -21,32 +41,18 @@
 
 </details>
 
-**维护者：** 拍片哥 · [GitHub @paipiange](https://github.com/paipiange)
-**GitHub 仓库：** <https://github.com/paipiange/ai-pose-gallery-zh>
-**原始数据作者：** ギア（@giaaibusi）
-**原始站点：** <https://ai-pose-gallery.pages.dev/>
-**原版汉化致谢：** Anhao · [X @anhao_ai](https://x.com/anhao_ai) / [anhao/ai-pose-gallery-zh](https://github.com/anhao/ai-pose-gallery-zh)
-
 ---
 
-## 这是什么
+## ✨ 拍片哥 AI 姿势生图与试穿工坊核心特色
 
-原站是一套面向 AI 绘画 / 3D / 摄影参考的姿势图库，元数据全部为日文，且不提供批量素材下载。本仓库不仅完成了全量数据镜像与汉化，更全面升级研发了 **拍片哥 AI 姿势生图与试穿工坊**：
-
-1. **全量镜像与汉化** —— 1439 条记录对应的缩略图与原图全部落地（共 2878 个文件 / 659.5 MB），4 个体系、26 个动作分类、288 个姿势名全部准确汉化。
-2. **轻量原生画廊** —— 零框架依赖的高性能响应式画廊，支持多角度切换、按姿势分组与原图下载。
-3. **拍片哥 AI 姿势生图工坊** —— 以 3D 白模为骨架，支持真实服装融合试穿、人脸局部头像面容复刻，打通 ComfyUI 本地工作流与主流云端模型。
-
-## ✨ 拍片哥 AI 姿势生图与试穿工坊 (Pose AI Studio)
-
-- **姿势骨架精准对齐**：选中任意姿势和拍摄视角，自动抽取人体素体并精准锁定动作构图。
-- **真实面料试穿**：支持上传真实服装图或选用精选预置款式，根据人体受力自动模拟布料褶皱与垂坠光影。
-- **人脸定制复刻**：支持拖拽或直接 `Ctrl + V` 粘贴人脸特写头像（门槛放宽至 32×32 局部特写），一键复刻神韵面容。
-- **多模型灵活切换**：
-  - **本地首选**：支持直连 ComfyUI 官方固定工作流（支持 `Qwen-Image-Edit-2511` 动态多图融合）。
-  - **云端大模型**：内置 Google Gemini 3.1、字节火山方舟豆包视觉模型、OpenAI GPT-Image 等。
-- **纯原生零泄露架构**：零打包、零构建工具，用户私有 Key 仅在浏览器本地 `localStorage` 留存，单次请求内存临时代理，绝不持久化落盘。
-- **本地历史存储**：生成结果自动保存在浏览器本地 IndexedDB，支持单条导出超清大图、复用生成 Prompt 与本地历史清空。
+1. **姿势骨架 100% 绝对保留**：独家定制提示词与空间构图约束，无论站姿、坐姿、回眸还是高难度动作，完全锁定原始机位视角与肢体动态。
+2. **定制人像面容复刻**：支持任意人脸特写（放宽至 32×32 局部特写截取），支持页面直接按快捷键 `Ctrl + V` 快速粘贴，将人物真实神态自然嵌入姿势画面。
+3. **真实面料商拍换装**：支持上传真实服装图或选择精选款式，AI 自动根据人体运动与肌肉受力模拟布料贴合与垂坠褶皱。
+4. **多模型自由切换**：
+   - **本地离线首选**：直连宿主机 ComfyUI 显卡工作流（优先 `Qwen-Image-Edit-2511` 4步极速生图，兼容 MiniMax H3），无需联网，零额度消耗；
+   - **云端前沿大模型**：深度接入 Google Gemini 3.1 极速视觉、字节火山方舟豆包 Seedream 与 OpenAI GPT-Image 系列。
+5. **历史状态全量恢复**：点击历史记录即可一键联动恢复当次生成所用的**姿势视角、搭配服装、人物头像与大图结果**，无缝二次微调与继续创作。
+6. **纯原生零泄露隐私架构**：原生零打包轻量体验，用户配置的私有 API Key 仅保存在浏览器本地，单次请求临时内存代理，杜绝数据落盘与泄露。
 
 ## 页面功能
 
@@ -64,15 +70,15 @@
 
 页面内置了完整的 SEO 与社交分享配置：
 
-- 关键词化标题：`AI 姿势参考库｜288 组人体姿势 · 1439 张多角度参考图`
+- 关键词化标题：`拍片哥 · AI 姿势参考库与生图工坊｜288 组人体姿势 · 1439 张多角度参考图`
 - 独立 description、keywords、author 与 `max-image-preview:large`
-- `canonical` 指向正式域名，避免自定义域名与 pages.dev 域名重复收录
+- `canonical` 与 `og:url` 统一指向拍片哥正式在线演示站点：`https://paipiange.github.io/ai-pose-gallery-zh/`
 - Open Graph / Twitter Card 使用 1200×630 的 `og-cover.jpg`
 - JSON-LD 结构化数据：`WebSite` + `ImageGallery`，声明语言、简介与页面主图
-- `robots.txt` 放行全站并声明 sitemap，`sitemap.xml` 指向首页
+- `robots.txt` 放行全站并声明 sitemap，`sitemap.xml` 指向在线首页
 - 语义结构：单一 H1、分区 H2、卡片 H3；缩略图 `alt` 含姿势名与视角，图片懒加载
 
-仓库中的项目地址统一指向 `https://github.com/paipiange/ai-pose-gallery-zh`。Fork 后如使用其他域名，需同步替换 `index.html` 的 canonical、`og:*`、`twitter:*`、JSON-LD，以及 `robots.txt`、`sitemap.xml` 中的地址。
+仓库中的在线演示与开源地址统一指向 `https://paipiange.github.io/ai-pose-gallery-zh/` 与 `https://github.com/paipiange/ai-pose-gallery-zh`。Fork 后如使用其他域名，需同步替换 `index.html` 的 canonical、`og:*`、`twitter:*`、JSON-LD，以及 `robots.txt`、`sitemap.xml` 中的地址。
 
 ## 数据规模
 
@@ -276,7 +282,7 @@ references/catalog.csv 里每一行的「图片」路径相对技能目录都能
 
 ## 版权与致谢
 
-- **图片与原始数据的著作权归原作者ギア所有**，来源地址见页首
-- 本仓库仅为个人学习、汉化与静态站点实践存档，**不对图片主张任何权利**，也不构成对原作品的商业使用授权
-- 若原作者认为本仓库侵犯其权益，请通过 Issue 联系，将立即删除相关内容
-- `scripts/` 与 `index.html` 的代码以 MIT 协议开源（见 [LICENSE](LICENSE)），该协议**不覆盖** `img/`、`thumbs/` 与 `data/` 中的图片和原始数据
+- **项目主创与维护**：由 **拍片哥** 独立升级研发与维护 · [GitHub @paipiange](https://github.com/paipiange) · 欢迎 Star 与交流商拍工作流！
+- **在线演示站点**：[https://paipiange.github.io/ai-pose-gallery-zh/](https://paipiange.github.io/ai-pose-gallery-zh/)
+- **原始数据与画稿**：人体素体线稿由 ギア（@giaaibusi）制作，原版汉化数据参考致谢 Anhao · [anhao/ai-pose-gallery-zh](https://github.com/anhao/ai-pose-gallery-zh)
+- **代码开源协议**：本项目前后端代码、AI 工坊管线与 Docker 编排采用 MIT 协议开源（详见 [LICENSE](LICENSE)）。姿势线稿数据版权归原作者所有，仅供个人学习、构图控图与艺术参考。
