@@ -497,8 +497,8 @@ main{padding:22px 0 54px}
 .history-close-btn{width:32px;height:32px;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);cursor:pointer;display:grid;place-items:center}
 .history-list{flex:1;overflow-y:auto;padding:14px 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
 .history-empty{grid-column:1/-1;text-align:center;color:var(--text-3);padding:60px 0}
-.history-item-card{position:relative;border:1px solid var(--line);border-radius:11px;overflow:hidden;background:var(--surface-2);transition:transform .15s}
-.history-item-card:hover{transform:translateY(-2px);border-color:#b9bfe0}
+.history-item-card{position:relative;border:1px solid var(--line);border-radius:11px;overflow:hidden;background:var(--surface-2);transition:transform .15s,border-color .15s,box-shadow .15s;cursor:pointer}
+.history-item-card:hover{transform:translateY(-2px);border-color:#6366f1;box-shadow:0 6px 20px rgba(0,0,0,.15)}
 .history-item-thumb{aspect-ratio:2/3;overflow:hidden;background:#000;cursor:pointer}
 .history-item-thumb img{width:100%;height:100%;object-fit:cover;display:block}
 .history-item-meta{padding:8px 10px;font-size:11px}
@@ -1669,6 +1669,7 @@ const studioState = {
   garmentBase64: '',
   garmentName: '',
   garmentSource: '',
+  garmentPresetId: '',
   avatarBase64: '',
   avatarName: '',
   avatarSource: '',
@@ -1827,6 +1828,7 @@ async function selectPresetGarment(gid) {
     studioState.garmentBase64 = b64;
     studioState.garmentName = g.name;
     studioState.garmentSource = '预设服装推荐';
+    studioState.garmentPresetId = gid;
 
     document.querySelectorAll('.garment-preset-card').forEach(c => {
       c.classList.toggle('on', c.dataset.gid === gid);
@@ -1850,6 +1852,7 @@ function removeSelectedGarment() {
   studioState.garmentBase64 = '';
   studioState.garmentName = '';
   studioState.garmentSource = '';
+  studioState.garmentPresetId = '';
   $('#selectedGarmentBar').hidden = true;
   document.querySelectorAll('.garment-preset-card').forEach(c => c.classList.remove('on'));
 }
@@ -1917,6 +1920,7 @@ function handleGarmentFile(file) {
     studioState.garmentBase64 = dataUrl;
     studioState.garmentName = file.name;
     studioState.garmentSource = '本地上传';
+    studioState.garmentPresetId = '';
     showSelectedGarmentBar(dataUrl, file.name, '本地素材');
     document.querySelectorAll('.garment-preset-card').forEach(c => c.classList.remove('on'));
   };
@@ -1934,6 +1938,7 @@ $('#loadGarmentUrlBtn').addEventListener('click', async () => {
     studioState.garmentBase64 = b64;
     studioState.garmentName = '网络服装图片';
     studioState.garmentSource = url;
+    studioState.garmentPresetId = '';
     showSelectedGarmentBar(b64, '网络图片素材', 'URL 直链');
     document.querySelectorAll('.garment-preset-card').forEach(c => c.classList.remove('on'));
   } catch (err) {
@@ -2171,17 +2176,27 @@ $('#studioGenerateBtn').addEventListener('click', async () => {
     // 保存至本地 IndexedDB
     const record = {
       id: Date.now(),
-      poseId: studioState.item.id,
-      poseName: studioState.group.name,
-      angle: studioState.item.角度,
-      poseThumb: studioState.item.缩略图,
+      poseId: studioState.item ? (studioState.item.id || studioState.item.姿势编号) : '',
+      poseName: studioState.group ? studioState.group.name : '',
+      poseSystem: studioState.group ? (studioState.group.system || '') : '',
+      angle: studioState.angle || (studioState.item ? studioState.item.角度 : ''),
+      poseThumb: studioState.item ? studioState.item.缩略图 : '',
+      poseImg: studioState.item ? (studioState.item.大图 || studioState.item.缩略图) : '',
       hasAvatar: !!studioState.avatarBase64,
       avatarThumb: studioState.avatarBase64 || '',
+      avatarBase64: studioState.avatarBase64 || '',
+      avatarName: studioState.avatarName || '定制人像',
+      avatarSource: studioState.avatarSource || '头像参考',
       hasGarment: !!studioState.garmentBase64,
       garmentName: studioState.garmentName || '',
+      garmentBase64: studioState.garmentBase64 || '',
+      garmentThumb: studioState.garmentBase64 || '',
+      garmentSource: studioState.garmentSource || '',
+      garmentPresetId: studioState.garmentPresetId || '',
       resultImage: imgSrc,
       prompt: resData.prompt || '',
       model: resData.model || model,
+      size,
       duration,
       timestamp: new Date().toLocaleString('zh-CN')
     };
@@ -2259,13 +2274,14 @@ async function renderHistoryList() {
     return;
   }
   container.innerHTML = list.map(item => `
-    <div class="history-item-card" data-hid="${item.id}">
+    <div class="history-item-card" data-hid="${item.id}" title="点击恢复该记录的姿势、人像与服装搭配">
       <button type="button" class="history-item-delete" title="删除该条记录" data-delid="${item.id}">✕</button>
-      <div class="history-item-thumb" data-viewimg="${item.id}">
+      <div class="history-item-thumb">
         <img src="${item.resultImage}" alt="${esc(item.poseName)}">
       </div>
       <div class="history-item-meta">
         <strong>${esc(item.poseName)} · ${esc(item.angle)}${item.hasAvatar ? ' <span class="badge badge-sub" style="font-size:9px">定制面容</span>' : ''}${item.hasGarment ? ' <span class="badge badge-sub" style="font-size:9px">搭配服装</span>' : ' <span class="badge badge-sub" style="font-size:9px;opacity:.7">AI搭配</span>'}</strong>
+        ${item.garmentName ? `<div style="font-size:11px;color:var(--text-3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(item.garmentName)}</div>` : ''}
         <span>${esc(item.timestamp)}</span>
       </div>
     </div>
@@ -2282,36 +2298,156 @@ $('#studioHistoryList').addEventListener('click', async event => {
     refreshHistoryBadge();
     return;
   }
-  const thumb = event.target.closest('[data-viewimg]');
-  if (thumb) {
-    const id = Number(thumb.dataset.viewimg);
+  const card = event.target.closest('.history-item-card');
+  if (card) {
+    const id = Number(card.dataset.hid);
     const list = await PoseDB.getAll();
     const item = list.find(r => r.id === id);
     if (item) {
-      studioState.lastResult = {
-        image: item.resultImage,
-        mime: 'image/png',
-        model: item.model,
-        prompt: item.prompt,
-        duration: item.duration || '0'
-      };
-      $('#resultModelBadge').textContent = item.model || 'AI';
-      $('#resultTimeBadge').textContent = `生成于 ${item.timestamp}`;
-      $('#studioResultImg').src = item.resultImage;
-      $('#downloadResultBtn').href = item.resultImage;
-      if (item.prompt) {
-        $('#resultPromptText').textContent = item.prompt;
-        $('#resultPromptDetails').hidden = false;
-      } else {
-        $('#resultPromptDetails').hidden = true;
-      }
-      $('#studioHistoryPane').hidden = true;
-      $('#studioEmptyState').hidden = true;
-      $('#studioLoadingState').hidden = true;
-      $('#studioResultState').hidden = false;
+      await loadHistoryRecord(item);
     }
   }
 });
+
+async function loadHistoryRecord(item) {
+  if (!item) return;
+
+  // 1. 恢复步骤 1：姿势底图（通过 poseId / poseName / angle 匹配 DATA 与 GROUPS）
+  let targetGroup = null;
+  let targetItem = null;
+
+  if (item.poseId) {
+    const foundData = DATA.find(d => d.id === item.poseId || d.姿势编号 === item.poseId);
+    if (foundData) {
+      targetItem = foundData;
+      const k = groupKey(foundData);
+      targetGroup = GROUPS.find(g => g.key === k) || GROUPS.find(g => g.items.some(i => i.id === foundData.id));
+    }
+  }
+
+  if (!targetGroup && item.poseName) {
+    targetGroup = GROUPS.find(g => g.name === item.poseName || g.number === item.poseId);
+  }
+
+  if (targetGroup) {
+    if (item.angle && targetGroup.angles[item.angle]) {
+      targetItem = targetGroup.angles[item.angle];
+    } else if (!targetItem) {
+      targetItem = targetGroup.order[0] || targetGroup.items[0];
+    }
+  }
+
+  // 若未从当前图库直接匹配到，做安全降级还原
+  if (!targetGroup || !targetItem) {
+    const fallbackItem = {
+      id: item.poseId || 'P001',
+      姿势编号: item.poseId || 'P001',
+      角度: item.angle || '正视',
+      缩略图: item.poseThumb || item.poseImg || 'thumbs/full_sexy_P001_front.jpg',
+      大图: item.poseImg || item.poseThumb || 'img/full_sexy_P001_front.png',
+      姿势名称: item.poseName || '精选姿势',
+      体系: item.poseSystem || '精选姿势',
+      分类: '全身姿势'
+    };
+    targetGroup = {
+      key: `hist|${fallbackItem.id}`,
+      system: fallbackItem.体系,
+      number: fallbackItem.姿势编号,
+      name: fallbackItem.姿势名称,
+      category: fallbackItem.分类,
+      items: [fallbackItem],
+      angles: { [fallbackItem.角度]: fallbackItem },
+      order: [fallbackItem]
+    };
+    targetItem = fallbackItem;
+  }
+
+  studioState.group = targetGroup;
+  studioState.item = targetItem;
+  studioState.angle = targetItem.角度 || item.angle || '正视';
+  updateStudioPoseCard();
+
+  // 2. 恢复步骤 2：人物人像
+  if (item.hasAvatar && (item.avatarBase64 || item.avatarThumb)) {
+    const avatarSrc = item.avatarBase64 || item.avatarThumb;
+    studioState.avatarBase64 = avatarSrc;
+    studioState.avatarName = item.avatarName || '定制人像';
+    studioState.avatarSource = item.avatarSource || '历史生成人像';
+    showSelectedAvatarBar(avatarSrc, studioState.avatarName, studioState.avatarSource);
+  } else {
+    removeSelectedAvatar();
+  }
+
+  // 3. 恢复步骤 3：搭配服装
+  if (item.hasGarment) {
+    const preset = PRESET_GARMENTS.find(g => (item.garmentPresetId && g.id === item.garmentPresetId) || (item.garmentName && g.name === item.garmentName));
+    if (preset) {
+      await selectPresetGarment(preset.id);
+    } else if (item.garmentBase64 || item.garmentThumb) {
+      const gSrc = item.garmentBase64 || item.garmentThumb;
+      studioState.garmentBase64 = gSrc;
+      studioState.garmentName = item.garmentName || '历史搭配服装';
+      studioState.garmentSource = item.garmentSource || '历史记录回填';
+      studioState.garmentPresetId = '';
+      document.querySelectorAll('.garment-preset-card').forEach(c => c.classList.remove('on'));
+      showSelectedGarmentBar(gSrc, studioState.garmentName, studioState.garmentSource);
+    } else {
+      // 兼容仅存有名称的旧记录
+      removeSelectedGarment();
+      if (item.garmentName) {
+        studioState.garmentName = item.garmentName;
+        studioState.garmentSource = '历史记录';
+        showSelectedGarmentBar('presets/garments/SPR-0001.webp', item.garmentName, '历史记录');
+      }
+    }
+  } else {
+    removeSelectedGarment();
+  }
+
+  // 4. 恢复步骤 4：生图参数（模型、尺寸）
+  if (item.model) {
+    const modelSelect = $('#studioModelSelect');
+    if (modelSelect && modelSelect.querySelector(`option[value="${item.model}"]`)) {
+      modelSelect.value = item.model;
+    }
+  }
+  if (item.size) {
+    const sizeSelect = $('#studioSizeSelect');
+    if (sizeSelect && sizeSelect.querySelector(`option[value="${item.size}"]`)) {
+      sizeSelect.value = item.size;
+    }
+  }
+
+  // 5. 恢复右侧生成结果预览
+  studioState.lastResult = {
+    image: item.resultImage,
+    mime: 'image/png',
+    model: item.model,
+    prompt: item.prompt,
+    duration: item.duration || '0'
+  };
+  $('#resultModelBadge').textContent = item.model || 'AI';
+  $('#resultTimeBadge').textContent = `生成于 ${item.timestamp || '历史'}`;
+  $('#studioResultImg').src = item.resultImage;
+  $('#downloadResultBtn').href = item.resultImage;
+  if (item.poseId) {
+    $('#downloadResultBtn').setAttribute('download', `paipiange-pose-${item.poseId}-${Date.now()}.png`);
+  }
+  if (item.prompt) {
+    $('#resultPromptText').textContent = item.prompt;
+    $('#resultPromptDetails').hidden = false;
+  } else {
+    $('#resultPromptDetails').hidden = true;
+  }
+
+  // 6. 确保主工坊抽屉打开、关闭历史抽屉，并切换展示结果视图
+  $('#studioDrawer').hidden = false;
+  document.body.classList.add('viewer-open');
+  $('#studioHistoryPane').hidden = true;
+  $('#studioEmptyState').hidden = true;
+  $('#studioLoadingState').hidden = true;
+  $('#studioResultState').hidden = false;
+}
 
 $('#clearAllHistoryBtn').addEventListener('click', async () => {
   if (!confirm('确定要清空本地所有历史生成记录吗？')) return;
