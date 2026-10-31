@@ -150,6 +150,55 @@ func TestControllerTryonImageValidation(t *testing.T) {
 	if resp4.StatusCode != 422 {
 		t.Fatalf("expected 422, got %d", resp4.StatusCode)
 	}
+
+	// 5. 可选头像：头像低于放宽后的下限（20x20 < 32x32）报错 AVATAR_DIMENSIONS_INVALID (42206)
+	tinyAvatarReq := v1.TryonReq{
+		PersonImage:  createTestPNG(300, 300),
+		GarmentImage: createTestPNG(300, 300),
+		AvatarImage:  createTestPNG(20, 20),
+	}
+	tinyAvatarBody, _ := json.Marshal(tinyAvatarReq)
+	req5, _ := http.NewRequest(http.MethodPost, "http://127.0.0.1:"+port+"/tryon", bytes.NewReader(tinyAvatarBody))
+	req5.Header.Set("Content-Type", "application/json")
+	resp5, err := client.Do(req5)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp5.Body.Close()
+	if resp5.StatusCode != 422 {
+		t.Fatalf("expected 422, got %d", resp5.StatusCode)
+	}
+	b5, _ := io.ReadAll(resp5.Body)
+	var res5 struct {
+		Code int `json:"code"`
+		Data struct {
+			ErrorCode string `json:"error_code"`
+		} `json:"data"`
+	}
+	_ = json.Unmarshal(b5, &res5)
+	if res5.Code != 42206 || res5.Data.ErrorCode != "AVATAR_DIMENSIONS_INVALID" {
+		t.Fatalf("unexpected res5: %+v", res5)
+	}
+
+	// 6. 可选头像：头像在放宽范围（如 64x64）通过图片校验（不再报 422 尺寸错误）
+	smallAvatarReq := v1.TryonReq{
+		PersonImage:  createTestPNG(300, 300),
+		GarmentImage: createTestPNG(300, 300),
+		AvatarImage:  createTestPNG(64, 64),
+	}
+	smallAvatarBody, _ := json.Marshal(smallAvatarReq)
+	req6, _ := http.NewRequest(http.MethodPost, "http://127.0.0.1:"+port+"/tryon", bytes.NewReader(smallAvatarBody))
+	req6.Header.Set("Content-Type", "application/json")
+	resp6, err := client.Do(req6)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp6.Body.Close()
+	// 如果由于未配置模型或者缺少外部 API 报错，状态码不会是 422（图片校验错误），说明成功通过了图片安全尺寸校验
+	if resp6.StatusCode == 422 {
+		b6, _ := io.ReadAll(resp6.Body)
+		t.Fatalf("expected 64x64 avatar to pass image validation, got 422: %s", string(b6))
+	}
 }
 
 func TestControllerTryonQuotaAndConcurrency(t *testing.T) {

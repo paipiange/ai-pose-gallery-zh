@@ -38,4 +38,5 @@ var (
 	ErrImageFileTooLarge       = NewAPIError(422, 42203, "IMAGE_FILE_TOO_LARGE", "图片文件过大，请压缩后重试")
 	ErrImageDimensionsInvalid  = NewAPIError(422, 42204, "IMAGE_DIMENSIONS_INVALID", "图片尺寸不符合要求")
 	ErrImagePixelLimitExceeded = NewAPIError(422, 42205, "IMAGE_PIXEL_LIMIT_EXCEEDED", "图片像素过高，请缩小后重试")
+	ErrAvatarDimensionsInvalid = NewAPIError(422, 42206, "AVATAR_DIMENSIONS_INVALID", "头像图片尺寸不符合要求（需至少 32x32 像素）")
 )

@@ -150,6 +150,35 @@ func TestValidateImageDimensions(t *testing.T) {
 	}
 }
 
+func TestValidateAvatarImageLimits(t *testing.T) {
+	limits := DefaultImageLimits()
+	avatarLimits := limits.AvatarLimits()
+
+	// 1. 头像图片 64x64：在主体限制下（min 256）失败，但在 avatarLimits（min 32）下成功
+	avatar64 := createTestPNG(64, 64)
+	if _, err := ValidateImage(avatar64, limits); err == nil {
+		t.Fatal("expected 64x64 image to fail standard limits")
+	}
+	validAvatar, err := ValidateImage(avatar64, avatarLimits)
+	if err != nil {
+		t.Fatalf("expected 64x64 image to pass avatarLimits, got: %v", err)
+	}
+	if validAvatar.Width != 64 || validAvatar.Height != 64 {
+		t.Fatalf("unexpected avatar dimensions: %dx%d", validAvatar.Width, validAvatar.Height)
+	}
+
+	// 2. 极端小图（如 20x20）：在 avatarLimits 下仍然被拒绝（小于 32x32）
+	avatar20 := createTestPNG(20, 20)
+	_, err = ValidateImage(avatar20, avatarLimits)
+	if err == nil {
+		t.Fatal("expected 20x20 image to fail avatar limits")
+	}
+	apiErr, ok := err.(*security.APIError)
+	if !ok || apiErr.ErrorCode != "IMAGE_DIMENSIONS_INVALID" {
+		t.Fatalf("expected IMAGE_DIMENSIONS_INVALID, got %v", err)
+	}
+}
+
 func TestValidateImagePixelLimit(t *testing.T) {
 	limits := DefaultImageLimits()
 	limits.MaxPixels = 100000 // 降低限制进行测试 (10万像素)

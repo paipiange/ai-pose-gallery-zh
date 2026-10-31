@@ -220,8 +220,10 @@ upload:
   maxEncodedImageBytes: 12582912    # 单张 Base64 编码字符串最大长度（12 MiB）
   maxDecodedImageBytes: 8388608     # 单张图片解码后真实文件大小上限（8 MiB）
   maxCombinedDecodedBytes: 16777216 # 两张图片（人像+服装）解码后合计字节上限（16 MiB）
-  minWidth: 256                     # 图片最小宽度（像素）
-  minHeight: 256                    # 图片最小高度（像素）
+  minWidth: 256                     # 主体图片最小宽度（像素，人像/服装/姿势模版）
+  minHeight: 256                    # 主体图片最小高度（像素）
+  avatarMinWidth: 32                # 定制头像参考图最小宽度（像素，放宽至人脸局部特写）
+  avatarMinHeight: 32               # 定制头像参考图最小高度（像素）
   maxWidth: 8192                    # 图片最大宽度（像素）
   maxHeight: 8192                   # 图片最大高度（像素）
   maxPixels: 20000000               # 单图最大像素总量（2000万像素，防内存耗尽）

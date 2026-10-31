@@ -13,6 +13,8 @@ type ImageLimits struct {
 	MaxCombinedDecodedBytes int64    `json:"maxCombinedDecodedBytes"`
 	MinWidth                int      `json:"minWidth"`
 	MinHeight               int      `json:"minHeight"`
+	AvatarMinWidth          int      `json:"avatarMinWidth"`
+	AvatarMinHeight         int      `json:"avatarMinHeight"`
 	MaxWidth                int      `json:"maxWidth"`
 	MaxHeight               int      `json:"maxHeight"`
 	MaxPixels               int64    `json:"maxPixels"`
@@ -27,6 +29,8 @@ func DefaultImageLimits() ImageLimits {
 		MaxCombinedDecodedBytes: 16777216, // 16 MiB
 		MinWidth:                256,
 		MinHeight:               256,
+		AvatarMinWidth:          32,
+		AvatarMinHeight:         32,
 		MaxWidth:                8192,
 		MaxHeight:               8192,
 		MaxPixels:               20000000, // 2000万像素
@@ -64,6 +68,12 @@ func LoadImageLimits(ctx context.Context) ImageLimits {
 	if limits.MinHeight <= 0 {
 		limits.MinHeight = 256
 	}
+	if limits.AvatarMinWidth <= 0 {
+		limits.AvatarMinWidth = 32
+	}
+	if limits.AvatarMinHeight <= 0 {
+		limits.AvatarMinHeight = 32
+	}
 	if limits.MaxWidth <= 0 {
 		limits.MaxWidth = 8192
 	}
@@ -81,4 +91,20 @@ func LoadImageLimits(ctx context.Context) ImageLimits {
 		}
 	}
 	return limits
+}
+
+// AvatarLimits 返回针对头像/人脸特写图片的校验限制（放宽最小分辨率要求）
+func (l ImageLimits) AvatarLimits() ImageLimits {
+	avatarLimits := l
+	minW := l.AvatarMinWidth
+	if minW <= 0 {
+		minW = 32
+	}
+	minH := l.AvatarMinHeight
+	if minH <= 0 {
+		minH = 32
+	}
+	avatarLimits.MinWidth = minW
+	avatarLimits.MinHeight = minH
+	return avatarLimits
 }

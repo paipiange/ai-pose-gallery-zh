@@ -39,13 +39,17 @@ func (c *ControllerV1) Tryon(ctx context.Context, req *v1.TryonReq) (res *v1.Try
 		return nil, nil
 	}
 
-	// 1.1 若传递了可选头像/人脸参考图，同样严格校验其格式、大小与像素
+	// 1.1 若传递了可选头像/人脸参考图，校验其格式、大小与像素（放宽头像最小尺寸至 AvatarLimits）
 	var avatarImg *imagevalidate.ValidatedImage
 	if strings.TrimSpace(req.AvatarImage) != "" {
 		var aErr error
-		avatarImg, aErr = imagevalidate.ValidateImage(req.AvatarImage, imgLimits)
+		avatarImg, aErr = imagevalidate.ValidateImage(req.AvatarImage, imgLimits.AvatarLimits())
 		if aErr != nil {
 			if apiErr, ok := aErr.(*security.APIError); ok {
+				if apiErr.ErrorCode == "IMAGE_DIMENSIONS_INVALID" {
+					middleware.WriteAPIError(r, security.ErrAvatarDimensionsInvalid)
+					return nil, nil
+				}
 				middleware.WriteAPIError(r, apiErr)
 				return nil, nil
 			}
