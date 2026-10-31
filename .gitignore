@@ -24,3 +24,12 @@ node_modules/
 
 # 构建产物
 dist/
+*.exe
+*.log
+backend/main
+backend/main.exe
+backend/bin/
+backend/temp/
+backend/output/
+backend/manifest/config/config.yaml
+**/config/config.yaml

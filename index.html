@@ -350,6 +350,208 @@ main{padding:22px 0 54px}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}
 }
+/* ==========================================================================
+   AI Pose Studio & Model Settings 样式扩展
+   ========================================================================== */
+.studio-btn{background:linear-gradient(135deg,var(--accent),#735bd6);color:#fff!important;box-shadow:0 2px 8px rgba(91,91,214,.24)}
+.studio-btn:hover{filter:brightness(1.08);color:#fff!important}
+.settings-btn{border:1px solid var(--line-strong)}
+.settings-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+.studio-cta-btn{min-height:46px;padding:0 16px;border:0;border-radius:11px;background:linear-gradient(135deg,#5b5bd6,#854fe0);color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;box-shadow:0 4px 14px rgba(91,91,214,.28);transition:transform .16s,filter .16s}
+.studio-cta-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.studio-cta-btn:active{transform:translateY(0) scale(.98)}
+
+/* 工坊抽屉弹窗 */
+.studio-drawer{position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:24px;background:rgba(15,18,28,.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);overflow-y:auto}
+.studio-container{position:relative;width:min(1280px,100%);height:min(900px,94dvh);display:flex;flex-direction:column;background:var(--surface);border-radius:24px;overflow:hidden;box-shadow:0 28px 90px rgba(0,0,0,.4)}
+.studio-header{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 24px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fff,var(--surface-2))}
+.studio-title-box h2{margin:0;font-size:18px;font-weight:800;display:flex;align-items:center;gap:8px}
+.studio-badge{padding:2px 7px;border-radius:6px;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700}
+.studio-subtitle{margin:3px 0 0;color:var(--text-3);font-size:12px}
+.studio-top-tools{display:flex;align-items:center;gap:8px}
+.studio-tool-btn{height:36px;padding:0 12px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface);color:var(--text-2);display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;cursor:pointer}
+.studio-tool-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--surface-2)}
+.studio-close{width:36px;height:36px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);color:var(--text-2);display:grid;place-items:center;cursor:pointer;font-size:16px}
+.studio-close:hover{background:var(--line);color:var(--text)}
+
+.studio-body{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:minmax(420px,460px) minmax(0,1fr);background:var(--bg)}
+.studio-controls-pane{min-height:0;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px;border-right:1px solid var(--line)}
+.studio-step-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.step-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+.step-num{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;flex:0 0 auto;margin-top:1px}
+.step-head h3{margin:0;font-size:14px;font-weight:700}
+.step-desc{margin:2px 0 0;color:var(--text-3);font-size:11px}
+
+/* 步骤 1 姿势卡 */
+.pose-current-box{display:flex;gap:12px;padding:10px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line)}
+.pose-current-thumb{width:68px;height:90px;flex:0 0 auto;border-radius:7px;overflow:hidden;background:#eee}
+.pose-current-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.pose-current-info{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
+.pose-current-tags{display:flex;gap:5px;margin-bottom:4px}
+.badge{padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700}
+.badge-primary{background:var(--accent-soft);color:var(--accent)}
+.badge-sub{background:#e2e5ec;color:var(--text-2)}
+.pose-current-info h4{margin:0;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pose-current-desc{margin:2px 0 6px;color:var(--text-3);font-size:11px}
+.pose-angle-selector{display:flex;gap:4px;flex-wrap:wrap}
+.pose-angle-selector button{padding:2px 7px;border:1px solid var(--line-strong);border-radius:5px;background:var(--surface);font-size:10px;color:var(--text-2);cursor:pointer}
+.pose-angle-selector button.on{border-color:var(--accent);background:var(--accent);color:#fff;font-weight:700}
+.step-action-row{margin-top:10px;display:flex;justify-content:flex-end}
+.studio-sub-btn{height:30px;padding:0 10px;border:1px solid var(--line-strong);border-radius:7px;background:var(--surface);color:var(--text-2);font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.studio-sub-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* 步骤 2 服装卡 */
+.garment-tabs{display:flex;gap:4px;background:#eceff5;padding:3px;border-radius:9px;margin-bottom:12px}
+.garment-tab{flex:1;border:0;border-radius:6px;background:transparent;color:var(--text-2);padding:6px 0;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap}
+.garment-tab.on{background:var(--surface);color:var(--accent);font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.garment-tab-pane{display:none}
+.garment-tab-pane.on{display:block}
+.garment-preset-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.garment-preset-card{position:relative;border:1.5px solid var(--line);border-radius:9px;overflow:hidden;cursor:pointer;background:var(--surface-2);aspect-ratio:3/4;transition:border-color .15s,transform .15s}
+.garment-preset-card:hover{border-color:#b9bfe0;transform:translateY(-2px)}
+.garment-preset-card.on{border-color:var(--accent);box-shadow:0 0 0 2px rgba(91,91,214,.3)}
+.garment-preset-card img{width:100%;height:100%;object-fit:cover;display:block}
+.garment-preset-title{position:absolute;bottom:0;left:0;right:0;padding:2px 4px;background:rgba(0,0,0,.68);color:#fff;font-size:9px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.garment-dropzone{border:2px dashed var(--line-strong);border-radius:12px;padding:20px 14px;text-align:center;cursor:pointer;background:var(--surface-2);color:var(--text-3);transition:border-color .16s,background .16s}
+.garment-dropzone:hover,.garment-dropzone.dragover{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.garment-dropzone p{margin:6px 0 2px;font-size:12px;color:var(--text-2)}
+.garment-dropzone span{font-size:10px}
+.garment-url-box{display:flex;gap:6px}
+.garment-url-box input{flex:1;height:36px;border:1px solid var(--line-strong);border-radius:8px;padding:0 10px;font-size:12px}
+.selected-garment-bar{display:flex;align-items:center;gap:10px;margin-top:10px;padding:8px 10px;border-radius:9px;background:rgba(91,91,214,.07);border:1px solid rgba(91,91,214,.2)}
+.selected-garment-bar img{width:36px;height:46px;object-fit:cover;border-radius:5px}
+.selected-garment-meta{flex:1;min-width:0;line-height:1.3}
+.selected-garment-meta strong{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.selected-garment-meta small{color:var(--text-3);font-size:10px}
+.remove-garment-btn{width:24px;height:24px;border:0;border-radius:50%;background:rgba(0,0,0,.08);cursor:pointer;display:grid;place-items:center;font-size:11px}
+
+/* 步骤 3 参数 */
+.studio-param-grid{display:grid;gap:10px}
+.param-field label{display:block;font-size:11px;font-weight:700;color:var(--text-2);margin-bottom:4px}
+.channel-status{height:40px;display:flex;align-items:center;gap:8px;padding:0 12px;border:1px solid var(--line-strong);border-radius:10px;background:var(--surface-2);font-size:12px}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#137a52}
+.status-link{margin-left:auto;color:var(--accent);text-decoration:none;font-weight:700;font-size:11px}
+
+/* 步骤 4 立即生成 */
+.studio-submit-box{position:sticky;bottom:0;background:var(--bg);padding-top:4px;z-index:2}
+.studio-generate-btn{width:100%;height:48px;border:0;border-radius:12px;background:linear-gradient(135deg,var(--accent),#7d5bd6);color:#fff;font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:9px;cursor:pointer;box-shadow:0 6px 20px rgba(91,91,214,.32);transition:filter .16s,transform .16s}
+.studio-generate-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.studio-generate-btn:active{transform:translateY(0) scale(.99)}
+.studio-generate-btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.studio-error-msg{margin-top:8px;padding:8px 12px;border-radius:8px;background:#fde8e8;color:#c81e1e;font-size:12px;line-height:1.4}
+
+/* 右侧展示面板 */
+.studio-display-pane{position:relative;min-height:0;display:flex;flex-direction:column;padding:24px;overflow-y:auto;align-items:center;justify-content:center}
+.studio-empty-state{max-width:540px;text-align:center;padding:20px}
+.empty-glow-box{width:80px;height:80px;margin:0 auto 16px;border-radius:24px;background:linear-gradient(135deg,var(--accent-soft),#e6e6fa);color:var(--accent);display:grid;place-items:center}
+.studio-empty-state h3{margin:0 0 8px;font-size:19px;font-weight:800}
+.studio-empty-state p{margin:0 0 24px;color:var(--text-2);font-size:13px;line-height:1.7}
+.studio-tips-grid{display:grid;grid-template-columns:1fr;gap:10px;text-align:left}
+.tip-card{padding:12px 14px;border-radius:11px;background:var(--surface);border:1px solid var(--line)}
+.tip-card strong{display:block;font-size:12px;color:var(--text);margin-bottom:2px}
+.tip-card span{display:block;font-size:11px;color:var(--text-3);line-height:1.5}
+
+/* 加载动画 */
+.studio-loading-state{text-align:center;padding:30px}
+.studio-spinner{width:64px;height:64px;border-radius:50%;border:4px solid rgba(91,91,214,.18);border-top-color:var(--accent);animation:spin 1s linear infinite;margin:0 auto 18px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.studio-loading-state h3{margin:0 0 6px;font-size:18px}
+.studio-loading-state p{margin:0 0 16px;color:var(--text-3);font-size:13px}
+.studio-timer{display:inline-block;padding:4px 14px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font-weight:800;font-size:15px;font-variant-numeric:tabular-nums}
+
+/* 结果卡片 */
+.studio-result-state{width:100%;max-width:680px;display:flex;flex-direction:column;gap:14px}
+.result-image-card{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:var(--shadow)}
+.result-toolbar{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.result-badge{padding:3px 9px;border-radius:6px;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700}
+.result-size{color:var(--text-3);font-size:11px;font-variant-numeric:tabular-nums}
+.result-preview-wrap{width:100%;aspect-ratio:2/3;max-height:560px;background:#171a21;display:grid;place-items:center;overflow:hidden}
+.result-preview-wrap img{width:100%;height:100%;object-fit:contain;display:block}
+.result-actions{display:flex;gap:8px;padding:14px 18px;background:var(--surface);flex-wrap:wrap}
+.result-btn{flex:1 1 auto;min-height:42px;padding:0 14px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface);color:var(--text);font-size:12px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;text-decoration:none}
+.result-btn:hover{border-color:var(--accent);color:var(--accent)}
+.result-btn.primary{border:0;background:var(--accent);color:#fff}
+.result-btn.primary:hover{background:var(--accent-dark);color:#fff}
+.result-prompt-details{padding:12px 18px;border-top:1px solid var(--line);background:var(--surface-2)}
+.result-prompt-details label{display:block;font-size:11px;font-weight:700;color:var(--text-3);margin-bottom:4px}
+.result-prompt-details pre{margin:0;font-size:11px;color:var(--text-2);white-space:pre-wrap;word-break:break-word;max-height:100px;overflow-y:auto;background:var(--surface);padding:8px 10px;border-radius:7px;border:1px solid var(--line)}
+
+/* 历史记录抽屉面板 */
+.studio-history-pane{position:absolute;inset:0;background:var(--surface);z-index:10;display:flex;flex-direction:column;padding:20px}
+.history-pane-header{display:flex;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.history-pane-header h4{margin:0;font-size:16px;font-weight:700}
+.history-pane-actions{display:flex;gap:8px}
+.history-clear-btn{border:0;background:transparent;color:#e02424;font-size:12px;font-weight:600;cursor:pointer}
+.history-close-btn{width:32px;height:32px;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);cursor:pointer;display:grid;place-items:center}
+.history-list{flex:1;overflow-y:auto;padding:14px 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.history-empty{grid-column:1/-1;text-align:center;color:var(--text-3);padding:60px 0}
+.history-item-card{position:relative;border:1px solid var(--line);border-radius:11px;overflow:hidden;background:var(--surface-2);transition:transform .15s}
+.history-item-card:hover{transform:translateY(-2px);border-color:#b9bfe0}
+.history-item-thumb{aspect-ratio:2/3;overflow:hidden;background:#000;cursor:pointer}
+.history-item-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.history-item-meta{padding:8px 10px;font-size:11px}
+.history-item-meta strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.history-item-meta span{color:var(--text-3);font-size:10px}
+.history-item-delete{position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;border:0;cursor:pointer;display:grid;place-items:center;font-size:12px}
+
+/* 设置中心模态框样式 */
+.settings-overlay{position:fixed;inset:0;z-index:150;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(15,18,28,.78);backdrop-filter:blur(8px)}
+.settings-card{width:min(620px,100%);max-height:calc(100dvh - 32px);overflow-y:auto;border:1px solid var(--line-strong);border-radius:20px;background:var(--surface);box-shadow:var(--shadow)}
+.settings-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:20px 22px 14px;border-bottom:1px solid var(--line)}
+.settings-head h2{margin:0 0 4px;font-size:18px;font-weight:800}
+.settings-head p{margin:0;color:var(--text-3);font-size:12px;line-height:1.5}
+.settings-close{width:36px;height:36px;border:1px solid var(--line);border-radius:50%;background:var(--surface-2);color:var(--text-2);font-size:16px;display:grid;place-items:center;cursor:pointer}
+.settings-close:hover{background:var(--line);color:var(--text)}
+.settings-form{display:grid;gap:14px;padding:18px 22px 22px}
+.settings-section{display:grid;gap:10px;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
+.settings-section h3{margin:0;font-size:13px;font-weight:700}
+.settings-field{display:grid;gap:5px}
+.settings-field>span{font-size:12px;font-weight:700;color:var(--text)}
+.settings-field input,.settings-field select{width:100%;height:42px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface);color:var(--text);font-size:13px;padding:0 12px;outline:none}
+.settings-field input:focus,.settings-field select:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(91,91,214,.15)}
+.settings-field small{font-size:11px;color:var(--text-3);line-height:1.4}
+.settings-password{position:relative}
+.settings-password input{padding-right:68px}
+.settings-password button{position:absolute;right:5px;top:4px;height:34px;padding:0 12px;border:0;border-radius:6px;background:var(--surface-2);color:var(--accent);font-size:11px;font-weight:700;cursor:pointer}
+.settings-toggle{display:flex;align-items:flex-start;gap:10px;cursor:pointer}
+.settings-toggle input{width:18px;height:18px;margin-top:2px;accent-color:var(--accent)}
+.settings-toggle-copy{display:grid;gap:2px}
+.settings-toggle-copy strong{font-size:13px}
+.settings-toggle-copy small{color:var(--text-3);font-size:11px;line-height:1.4}
+.settings-custom-fields{display:grid;gap:10px;margin:0;padding:0;border:0}
+.settings-custom-fields:disabled{opacity:.45;pointer-events:none}
+.comfy-test-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.comfy-test-row strong{font-size:13px;display:block}
+.comfy-test-row p{margin:2px 0 0;font-size:11px;color:var(--text-3)}
+.comfy-status-msg{margin-top:8px;padding:8px 10px;border-radius:7px;font-size:11px}
+.comfy-status-msg.ok{background:#def7ec;color:#03543f}
+.comfy-status-msg.err{background:#fde8e8;color:#9b1c1c}
+.settings-status-msg{min-height:18px;font-size:12px;text-align:right}
+.settings-status-msg.ok{color:#0e9f6e}
+.settings-status-msg.err{color:#f05252}
+.settings-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.settings-actions button{height:40px;padding:0 16px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer}
+.settings-reset{margin-right:auto;border:1px solid #f98080;background:#fde8e8;color:#c81e1e}
+.settings-cancel{border:1px solid var(--line-strong);background:var(--surface);color:var(--text-2)}
+.settings-save{border:0;background:var(--accent);color:#fff}
+.settings-save:hover{background:var(--accent-dark)}
+
+@media(max-width:980px){
+  .studio-body{grid-template-columns:1fr;display:flex;flex-direction:column}
+  .studio-controls-pane{border-right:0;border-bottom:1px solid var(--line);max-height:55dvh}
+  .studio-display-pane{padding:16px}
+}
+@media(max-width:680px){
+  .studio-drawer{padding:0}
+  .studio-container{width:100%;height:100dvh;max-height:none;border-radius:0}
+  .studio-header{padding:14px 16px}
+  .studio-subtitle{display:none}
+  .studio-controls-pane{padding:14px}
+  .garment-preset-grid{grid-template-columns:repeat(4,1fr)}
+  .settings-overlay{padding:0}
+  .settings-card{width:100%;height:100dvh;max-height:none;border-radius:0}
+}
 </style>
 </head>
 <body>
@@ -360,6 +562,14 @@ main{padding:22px 0 54px}
       <span class="brand-copy"><strong>POSE Atlas</strong><span>Reference Library</span></span>
     </a>
     <nav class="top-actions" aria-label="帮助与来源">
+      <button class="action-btn studio-btn" id="openStudioBtn" type="button" title="打开 AI 姿势生图与试穿工坊">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="7"/></svg>
+        <span class="action-text">🎨 AI 创作工坊</span>
+      </button>
+      <button class="action-btn settings-btn" id="openSettingsBtn" type="button" aria-label="模型设置" title="模型与后端设置">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span class="action-text">设置</span>
+      </button>
       <button class="action-btn" type="button" data-info="guide"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.7 9a2.4 2.4 0 0 1 4.6 1c0 1.8-2.3 2-2.3 3.6M12 17h.01"/></svg><span class="action-text">使用指南</span></button>
       <button class="action-btn" type="button" data-info="notice"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3 2.8 20h18.4L12 3Z"/><path d="M12 9v5m0 3h.01"/></svg><span class="action-text">注意事项</span></button>
       <a class="action-btn author" href="https://github.com/anhao/ai-pose-gallery-zh" target="_blank" rel="noopener noreferrer" aria-label="访问我们的 GitHub 仓库"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .8a11.3 11.3 0 0 0-3.6 22c.6.1.8-.2.8-.5v-2.2c-3.3.7-4-1.4-4-1.4-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5A11.3 11.3 0 0 0 12 .8Z"/></svg><span class="action-text">GitHub</span></a>
@@ -462,6 +672,10 @@ main{padding:22px 0 54px}
         <div class="viewer-angles" id="viewerAngles"></div>
       </div>
       <div class="download-stack">
+        <button class="studio-cta-btn" id="viewerUsePoseBtn" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18"/></svg>
+          <span>以当前姿势生图 / 试衣</span>
+        </button>
         <a class="download-btn" id="downloadImage" href="#" download><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3v12m-5-5 5 5 5-5M4 20h16"/></svg>下载原尺寸 PNG</a>
         <a class="open-btn" id="openImage" href="#" target="_blank" rel="noopener noreferrer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M14 4h6v6m0-6-9 9M19 14v6H4V5h6"/></svg>新窗口打开</a>
       </div>
@@ -475,6 +689,352 @@ main{padding:22px 0 54px}
   <div class="info-head"><h2 id="infoTitle">使用指南</h2><button class="info-close" id="infoClose" type="button" aria-label="关闭"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
   <div class="info-content" id="infoContent"></div>
 </dialog>
+
+<!-- AI 创作工坊抽屉/弹窗 -->
+<div class="studio-drawer" id="studioDrawer" role="dialog" aria-modal="true" aria-labelledby="studioTitle" hidden>
+  <div class="studio-container">
+    <div class="studio-header">
+      <div class="studio-title-box">
+        <h2 id="studioTitle">🎨 AI 姿势生图与试穿工坊 <span class="studio-badge">Pose AI Studio</span></h2>
+        <p class="studio-subtitle">以人体姿势素体为骨架，融合真实服装面料，生成高品质时尚人像大片</p>
+      </div>
+      <div class="studio-top-tools">
+        <button type="button" class="studio-tool-btn" id="studioHistoryToggle" title="查看本地生成历史">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span>历史记录 (<span id="historyCount">0</span>)</span>
+        </button>
+        <button type="button" class="studio-tool-btn" id="studioQuickSettingsBtn" title="打开模型设置">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>设置</span>
+        </button>
+        <button type="button" class="studio-close" id="studioClose" aria-label="关闭工坊">✕</button>
+      </div>
+    </div>
+
+    <div class="studio-body">
+      <!-- 左侧：4步操作流 -->
+      <div class="studio-controls-pane">
+        <!-- 步骤 1：姿势底图 -->
+        <section class="studio-step-card">
+          <div class="step-head">
+            <span class="step-num">1</span>
+            <div>
+              <h3>姿势参考底图（骨架）</h3>
+              <p class="step-desc">决定模特的身体姿态、四肢摆放与拍摄镜头透视</p>
+            </div>
+          </div>
+          <div class="pose-current-box" id="studioPoseCurrent">
+            <div class="pose-current-thumb">
+              <img id="studioPoseImg" src="" alt="当前姿势底图">
+            </div>
+            <div class="pose-current-info">
+              <div class="pose-current-tags">
+                <span class="badge badge-primary" id="studioPoseId">POSE-001</span>
+                <span class="badge badge-sub" id="studioPoseAngle">正面</span>
+              </div>
+              <h4 id="studioPoseName">S形站姿</h4>
+              <p class="pose-current-desc" id="studioPoseSystem">全身单人 · 标准系</p>
+              <!-- 快捷切换当前姿势的视角 -->
+              <div class="pose-angle-selector" id="studioPoseAngles"></div>
+            </div>
+          </div>
+          <div class="step-action-row">
+            <button type="button" class="studio-sub-btn" id="studioChangePoseBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+              <span>从姿势图库更换</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- 步骤 2：搭配服装设计 -->
+        <section class="studio-step-card">
+          <div class="step-head">
+            <span class="step-num">2</span>
+            <div>
+              <h3>搭配服装（血肉）</h3>
+              <p class="step-desc">提取服装的款式、剪裁面料与色彩，忠实上身试穿</p>
+            </div>
+          </div>
+
+          <div class="garment-tabs">
+            <button type="button" class="garment-tab on" data-gtab="preset">经典女装推荐 (8款)</button>
+            <button type="button" class="garment-tab" data-gtab="upload">本地图片上传</button>
+            <button type="button" class="garment-tab" data-gtab="url">图片网络链接</button>
+          </div>
+
+          <!-- 预设列表 -->
+          <div class="garment-tab-pane on" id="garmentPresetPane">
+            <div class="garment-preset-grid" id="garmentPresetGrid"></div>
+          </div>
+
+          <!-- 本地上传 -->
+          <div class="garment-tab-pane" id="garmentUploadPane">
+            <div class="garment-dropzone" id="garmentDropzone">
+              <input type="file" id="garmentFileInput" accept="image/png,image/jpeg,image/webp" hidden>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <p><strong>点击或拖拽服装图片到这里</strong></p>
+              <span>支持 PNG / JPG / WEBP，建议单品平铺或模特图</span>
+            </div>
+          </div>
+
+          <!-- 网络URL -->
+          <div class="garment-tab-pane" id="garmentUrlPane">
+            <div class="garment-url-box">
+              <input type="url" id="garmentUrlInput" placeholder="输入服装图片直链 (https://...)" autocomplete="off">
+              <button type="button" class="studio-sub-btn" id="loadGarmentUrlBtn">载入图片</button>
+            </div>
+          </div>
+
+          <!-- 选中的服装回显 -->
+          <div class="selected-garment-bar" id="selectedGarmentBar" hidden>
+            <img id="selectedGarmentImg" src="" alt="已选服装">
+            <div class="selected-garment-meta">
+              <strong id="selectedGarmentName">已选服装</strong>
+              <small id="selectedGarmentSource">预设款式</small>
+            </div>
+            <button type="button" class="remove-garment-btn" id="removeGarmentBtn" title="清除重新选择">✕</button>
+          </div>
+        </section>
+
+        <!-- 步骤 3：模型与参数配置 -->
+        <section class="studio-step-card">
+          <div class="step-head">
+            <span class="step-num">3</span>
+            <div>
+              <h3>生图模型与参数</h3>
+              <p class="step-desc">选择 AI 绘画推理后端与画布比例</p>
+            </div>
+          </div>
+          <div class="studio-param-grid">
+            <div class="param-field">
+              <label for="studioModelSelect">推理模型</label>
+              <div class="select-wrap">
+                <select id="studioModelSelect">
+                  <option value="gemini" selected>Gemini 3.1 Flash Image (推荐·写实逼真)</option>
+                  <option value="comfyui">ComfyUI 本地离线 (Qwen/H3·免费不耗额度)</option>
+                  <option value="doubao">豆包 Seedream (火山方舟)</option>
+                  <option value="gpt-image">GPT-Image (OpenAI 协议兼容)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="param-field">
+              <label for="studioSizeSelect">输出画幅尺寸</label>
+              <div class="select-wrap">
+                <select id="studioSizeSelect">
+                  <option value="1024x1536" selected>1024 × 1536 (2:3 纵向模特比例)</option>
+                  <option value="1024x1024">1024 × 1024 (1:1 正方形)</option>
+                  <option value="1536x1024">1536 × 1024 (3:2 横向构图)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="param-field">
+              <label for="studioLangSelect">提示词语言</label>
+              <div class="select-wrap">
+                <select id="studioLangSelect">
+                  <option value="zh" selected>中文 (遵循姿势与商拍指令)</option>
+                  <option value="en">English (稳定标准模式)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="param-field">
+              <label>API 运行通道</label>
+              <div class="channel-status" id="channelStatusNotice">
+                <span class="status-dot online"></span>
+                <span id="channelStatusText">默认/本地配置</span>
+                <a href="#" id="editChannelConfigLink" class="status-link">配置 Key</a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 步骤 4：生成操作栏 -->
+        <div class="studio-submit-box">
+          <button type="button" class="studio-generate-btn" id="studioGenerateBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <span>立即以此姿势生成 / 试穿</span>
+          </button>
+          <div class="studio-error-msg" id="studioErrorMsg" hidden></div>
+        </div>
+      </div>
+
+      <!-- 右侧：生成展示与交互画廊 -->
+      <div class="studio-display-pane">
+        <!-- 空状态 -->
+        <div class="studio-empty-state" id="studioEmptyState">
+          <div class="empty-glow-box">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="M12 8v8m-4-4h8"/></svg>
+          </div>
+          <h3>AI 姿势生图已就绪</h3>
+          <p>左侧已默认锁定选定姿势与角度，挑选一套服装款式后，点击「立即以此姿势生成」即可合成真人时尚摄影大片。</p>
+          <div class="studio-tips-grid">
+            <div class="tip-card">
+              <strong>📐 严格还原姿态</strong>
+              <span>无论俯视、仰视、侧身还是斜侧，完全忠于白模素体骨骼</span>
+            </div>
+            <div class="tip-card">
+              <strong>👗 真实面料褶皱</strong>
+              <span>根据身体受力点自动计算衣物垂坠与阴影</span>
+            </div>
+            <div class="tip-card">
+              <strong>🔒 零持久化隐私安全</strong>
+              <span>浏览器本地 Key 临时代理，内存用完即弃，不落磁盘</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 加载中状态 -->
+        <div class="studio-loading-state" id="studioLoadingState" hidden>
+          <div class="studio-spinner"></div>
+          <h3 id="studioLoadingTitle">正在解析人体姿态骨架…</h3>
+          <p id="studioLoadingDesc">正在将选定视角素体与服装材质进行多模态合成渲染</p>
+          <div class="studio-timer"><span id="studioElapsed">0.0</span>s</div>
+        </div>
+
+        <!-- 生成结果展示 -->
+        <div class="studio-result-state" id="studioResultState" hidden>
+          <div class="result-image-card">
+            <div class="result-toolbar">
+              <span class="result-badge" id="resultModelBadge">Gemini 3.1</span>
+              <span class="result-size" id="resultTimeBadge">耗时 4.2s</span>
+            </div>
+            <div class="result-preview-wrap">
+              <img id="studioResultImg" src="" alt="AI 试穿生成结果">
+            </div>
+            <div class="result-actions">
+              <a class="result-btn primary" id="downloadResultBtn" href="#" download="ai-pose-studio.png">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>下载超清原图</span>
+              </a>
+              <button type="button" class="result-btn" id="copyPromptBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                <span>复制生成 Prompt</span>
+              </button>
+              <button type="button" class="result-btn" id="openResultNewTabBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                <span>新窗口打开</span>
+              </button>
+            </div>
+            <div class="result-prompt-details" id="resultPromptDetails" hidden>
+              <label>实际执行的渲染提示词：</label>
+              <pre id="resultPromptText"></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- 历史记录面板 (可滑出/切换) -->
+        <div class="studio-history-pane" id="studioHistoryPane" hidden>
+          <div class="history-pane-header">
+            <h4>本地生成历史记录</h4>
+            <div class="history-pane-actions">
+              <button type="button" class="history-clear-btn" id="clearAllHistoryBtn">清空全部</button>
+              <button type="button" class="history-close-btn" id="closeHistoryPaneBtn">✕</button>
+            </div>
+          </div>
+          <div class="history-list" id="studioHistoryList">
+            <p class="history-empty">暂无历史生成记录</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 设置中心模态框 -->
+<div class="settings-overlay" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle" hidden>
+  <div class="settings-card">
+    <div class="settings-head">
+      <div>
+        <h2 id="settingsModalTitle">⚙️ 模型与后端设置</h2>
+        <p>配置 AI 生图后端服务，或在浏览器本地填入你的私有模型 API Key（安全防泄漏）。</p>
+      </div>
+      <button type="button" class="settings-close" id="settingsCloseBtn" aria-label="关闭设置">✕</button>
+    </div>
+
+    <form class="settings-form" id="studioSettingsForm" onsubmit="return false;">
+      <section class="settings-section">
+        <h3>后端服务连接</h3>
+        <label class="settings-field">
+          <span>后端 API 地址</span>
+          <input type="url" id="cfgBackendUrl" placeholder="http://127.0.0.1:8000" autocomplete="url">
+          <small>默认本地服务为 <code>http://127.0.0.1:8000</code>。若部署到服务器请填对应公网地址。</small>
+        </label>
+        <label class="settings-field">
+          <span>后端访问 Token (可选)</span>
+          <div class="settings-password">
+            <input type="password" id="cfgBackendToken" placeholder="若后端开启安全鉴权请输入 Bearer Token" autocomplete="off">
+            <button type="button" id="toggleTokenVisibility">显示</button>
+          </div>
+          <small>仅当服务端在 config.yaml 中开启 <code>authRequired: true</code> 时必填。</small>
+        </label>
+      </section>
+
+      <section class="settings-section">
+        <label class="settings-toggle">
+          <input type="checkbox" id="cfgUseCustom">
+          <div class="settings-toggle-copy">
+            <strong>使用我自己的模型配置 (Client Config)</strong>
+            <small>启用后，将绕过后端默认 Key，由浏览器直接下发你的私有 Base URL 与 API Key（仅在单次请求内存临时代理，绝不写入服务器磁盘）。</small>
+          </div>
+        </label>
+
+        <fieldset class="settings-custom-fields" id="settingsCustomFields" disabled>
+          <label class="settings-field">
+            <span>接口协议 (Provider)</span>
+            <select id="cfgProvider">
+              <option value="gemini">Google Gemini (generateContent 协议)</option>
+              <option value="openai">OpenAI 兼容协议 (Images / Compatible)</option>
+              <option value="doubao">火山方舟 豆包 (Ark Protocol)</option>
+              <option value="comfyui">ComfyUI 本地推理服务</option>
+            </select>
+          </label>
+
+          <label class="settings-field" id="cfgBaseUrlField">
+            <span>API Base URL</span>
+            <input type="url" id="cfgBaseUrl" placeholder="https://generativelanguage.googleapis.com/v1beta">
+            <small>填入 API 根地址，无需包含末尾斜杠、模型路径或 Key 参数。</small>
+          </label>
+
+          <label class="settings-field" id="cfgApiKeyField">
+            <span>API Key</span>
+            <div class="settings-password">
+              <input type="password" id="cfgApiKey" placeholder="AIza... / sk-... / ark-..." autocomplete="off">
+              <button type="button" id="toggleKeyVisibility">显示</button>
+            </div>
+            <small>敏感凭证仅保存在当前浏览器 LocalStorage，单次请求临时转发。</small>
+          </label>
+
+          <label class="settings-field" id="cfgModelField">
+            <span>真实模型名 (Model Name)</span>
+            <input type="text" id="cfgRealModel" placeholder="gemini-3.1-flash-image">
+            <small>例如 <code>gemini-3.1-flash-image</code>、<code>gpt-image-2</code>、<code>doubao-seedream-3-0-t2i-250415</code>。</small>
+          </label>
+        </fieldset>
+      </section>
+
+      <div class="settings-section" id="comfyTestSection">
+        <div class="comfy-test-row">
+          <div>
+            <strong>本地 ComfyUI 服务状态</strong>
+            <p>检查后端与本地 8188 端口工作流是否就绪</p>
+          </div>
+          <button type="button" class="studio-sub-btn" id="testComfyBtn">测试 ComfyUI 连通性</button>
+        </div>
+        <div class="comfy-status-msg" id="comfyStatusMsg" hidden></div>
+      </div>
+
+      <div class="settings-status-msg" id="settingsStatusMsg"></div>
+
+      <div class="settings-actions">
+        <button type="button" class="settings-reset" id="resetSettingsBtn">恢复默认配置</button>
+        <button type="button" class="settings-cancel" id="cancelSettingsBtn">取消</button>
+        <button type="button" class="settings-save" id="saveSettingsBtn">保存并应用</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <script>
 (() => {
@@ -871,6 +1431,14 @@ $('#viewerStage').addEventListener('touchend', event => {
 }, { passive: true });
 
 document.addEventListener('keydown', event => {
+  if (!$('#settingsModal').hidden) {
+    if (event.key === 'Escape') closeSettings();
+    return;
+  }
+  if (!$('#studioDrawer').hidden) {
+    if (event.key === 'Escape') closeStudio();
+    return;
+  }
   if (!$('#viewer').hidden) {
     if (event.key === 'Escape') closeViewer();
     else if (event.key === 'ArrowRight') stepAngle(1);
@@ -906,6 +1474,771 @@ document.querySelectorAll('[data-info]').forEach(button => {
 });
 $('#infoClose').addEventListener('click', () => $('#infoDialog').close());
 $('#infoDialog').addEventListener('click', event => { if (event.target === $('#infoDialog')) $('#infoDialog').close(); });
+
+/* ==========================================================================
+   AI Pose Studio & Model Settings 逻辑实现
+   ========================================================================== */
+const PRESET_GARMENTS = [
+  { id: 'SPR-0001', name: '法式针织短裙', file: 'presets/garments/SPR-0001.webp' },
+  { id: 'SPR-0002', name: '黄色碎花吊带连身裙', file: 'presets/garments/SPR-0002.webp' },
+  { id: 'SPR-0003', name: '西装衬衫百褶短裙', file: 'presets/garments/SPR-0003.webp' },
+  { id: 'SPR-0004', name: '米色工装风衣短裙', file: 'presets/garments/SPR-0004.webp' },
+  { id: 'SPR-0005', name: '优雅碎花过膝长裙', file: 'presets/garments/SPR-0005.webp' },
+  { id: 'SPR-0006', name: '高领针织裙配外套', file: 'presets/garments/SPR-0006.webp' },
+  { id: 'SPR-0007', name: '水蓝雪纺吊带百褶裙', file: 'presets/garments/SPR-0007.webp' },
+  { id: 'SPR-0008', name: '橄榄绿法式衬衫裙', file: 'presets/garments/SPR-0008.webp' }
+];
+
+const DEFAULT_SETTINGS = {
+  backendUrl: 'http://127.0.0.1:8000',
+  backendToken: '',
+  useCustom: false,
+  provider: 'gemini',
+  baseUrl: 'https://generativelanguage.googleapis.com/v1beta',
+  apiKey: '',
+  realModel: 'gemini-3.1-flash-image'
+};
+
+function getSettings() {
+  try {
+    const raw = localStorage.getItem('ai_pose_studio_settings');
+    return raw ? { ...DEFAULT_SETTINGS, ...JSON.parse(raw) } : { ...DEFAULT_SETTINGS };
+  } catch {
+    return { ...DEFAULT_SETTINGS };
+  }
+}
+
+function saveSettings(cfg) {
+  localStorage.setItem('ai_pose_studio_settings', JSON.stringify(cfg));
+  updateChannelStatusNotice();
+}
+
+function updateChannelStatusNotice() {
+  const cfg = getSettings();
+  const notice = $('#channelStatusText');
+  if (!notice) return;
+  if (cfg.useCustom && cfg.apiKey) {
+    const provName = { gemini: 'Gemini', openai: 'OpenAI', doubao: '豆包', comfyui: 'ComfyUI' }[cfg.provider] || cfg.provider;
+    notice.textContent = `${provName} · 浏览器本地Key`;
+  } else {
+    notice.textContent = '后端默认/本地配置';
+  }
+}
+
+async function urlToBase64(url) {
+  const resp = await fetch(url);
+  if (!resp.ok) throw new Error(`加载图片资源失败 (${resp.status}): ${url}`);
+  const blob = await resp.blob();
+  let mimeType = blob.type;
+  if (!mimeType || mimeType === 'application/octet-stream') {
+    const cleanUrl = url.split('?')[0].toLowerCase();
+    if (cleanUrl.endsWith('.webp')) mimeType = 'image/webp';
+    else if (cleanUrl.endsWith('.png')) mimeType = 'image/png';
+    else if (cleanUrl.endsWith('.jpg') || cleanUrl.endsWith('.jpeg')) mimeType = 'image/jpeg';
+  }
+  const finalBlob = (mimeType && mimeType !== blob.type) ? new Blob([blob], { type: mimeType }) : blob;
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(finalBlob);
+  });
+}
+
+const PoseDB = {
+  db: null,
+  async init() {
+    if (this.db) return this.db;
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open('PoseStudioDB', 1);
+      req.onupgradeneeded = e => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains('generations')) {
+          db.createObjectStore('generations', { keyPath: 'id' });
+        }
+      };
+      req.onsuccess = e => {
+        this.db = e.target.result;
+        resolve(this.db);
+      };
+      req.onerror = e => reject(e);
+    });
+  },
+  async add(record) {
+    const db = await this.init();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction('generations', 'readwrite');
+      tx.objectStore('generations').put(record);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  },
+  async getAll() {
+    const db = await this.init();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction('generations', 'readonly');
+      const req = tx.objectStore('generations').getAll();
+      req.onsuccess = () => {
+        const list = req.result || [];
+        list.sort((a, b) => b.id - a.id);
+        resolve(list);
+      };
+      req.onerror = () => reject(tx.error);
+    });
+  },
+  async delete(id) {
+    const db = await this.init();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction('generations', 'readwrite');
+      tx.objectStore('generations').delete(id);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  },
+  async clear() {
+    const db = await this.init();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction('generations', 'readwrite');
+      tx.objectStore('generations').clear();
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+};
+
+const studioState = {
+  group: null,
+  item: null,
+  angle: '',
+  garmentBase64: '',
+  garmentName: '',
+  garmentSource: '',
+  isGenerating: false,
+  timerId: null,
+  startTime: 0,
+  lastResult: null
+};
+
+async function executeStudioGenerate(poseImgUrl, garmentBase64, options = {}) {
+  const settings = getSettings();
+  const backendUrl = (settings.backendUrl || 'http://127.0.0.1:8000').replace(/\/+$/, '');
+  
+  // 1. 姿势底图转 Base64
+  const poseBase64 = await urlToBase64(poseImgUrl);
+  
+  // 2. 构造请求载荷
+  const payload = {
+    person_image: poseBase64,      // 姿势白模作为模特骨架
+    garment_image: garmentBase64,  // 服装素材
+    model: options.model || 'gemini',
+    size: options.size || '1024x1536',
+    keep_face: false,              // 姿势是白模素体，无需保持原人脸
+    lang: options.lang || 'zh'
+  };
+
+  // 3. 附带前端自定义模型配置（如有启用，非离线 ComfyUI 时透传）
+  if (options.model !== 'comfyui' && settings.useCustom && settings.apiKey && settings.provider) {
+    payload.client_config = {
+      provider: settings.provider,
+      base_url: settings.baseUrl || '',
+      api_key: settings.apiKey,
+      model: settings.realModel || ''
+    };
+  }
+
+  // 4. 调用后端
+  const headers = { 'Content-Type': 'application/json' };
+  if (settings.backendToken) {
+    headers['Authorization'] = `Bearer ${settings.backendToken}`;
+  }
+
+  const res = await fetch(`${backendUrl}/tryon`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json();
+  if (data.code !== 0) {
+    throw new Error(data.message || (data.data && data.data.error_code) || '生成失败');
+  }
+  
+  return data.data; // { image: "base64...", mime: "image/png", prompt: "..." }
+}
+
+async function refreshHistoryBadge() {
+  try {
+    const list = await PoseDB.getAll();
+    $('#historyCount').textContent = list.length;
+  } catch {
+    $('#historyCount').textContent = '0';
+  }
+}
+
+function openStudioWithPose(group, item) {
+  if (!group || !item) {
+    // 默认选取当前列表中的第一项或第一个group
+    const fallbackEntry = currentList[0] || { group: GROUPS[0], item: GROUPS[0]?.order[0] };
+    if (!fallbackEntry || !fallbackEntry.group) return;
+    group = fallbackEntry.group;
+    item = fallbackEntry.item || fallbackEntry.group.order[0];
+  }
+
+  studioState.group = group;
+  studioState.item = item;
+  studioState.angle = item.角度;
+
+  // 更新步骤 1 姿势卡回显
+  updateStudioPoseCard();
+
+  // 若尚未选择服装，默认选择第一款预设服装
+  if (!studioState.garmentBase64) {
+    selectPresetGarment(PRESET_GARMENTS[0].id);
+  }
+
+  updateChannelStatusNotice();
+  refreshHistoryBadge();
+
+  $('#studioDrawer').hidden = false;
+  document.body.classList.add('viewer-open');
+}
+
+function closeStudio() {
+  $('#studioDrawer').hidden = true;
+  document.body.classList.remove('viewer-open');
+}
+
+function updateStudioPoseCard() {
+  const { group, item } = studioState;
+  if (!group || !item) return;
+
+  $('#studioPoseImg').src = item.缩略图;
+  $('#studioPoseImg').alt = `${group.name} · ${item.角度}`;
+  $('#studioPoseId').textContent = item.姿势编号 || item.id;
+  $('#studioPoseAngle').textContent = item.角度;
+  $('#studioPoseName').textContent = group.name;
+  $('#studioPoseSystem').textContent = `${group.system} · ${group.category}`;
+
+  // 渲染视角快速切换按钮
+  $('#studioPoseAngles').innerHTML = ANGLES.filter(ang => group.angles[ang]).map(ang => {
+    const isCurrent = ang === item.角度;
+    return `<button type="button" class="${isCurrent ? 'on' : ''}" data-angle="${esc(ang)}">${esc(ang)}</button>`;
+  }).join('');
+}
+
+// 切换工坊内当前姿势的视角
+$('#studioPoseAngles').addEventListener('click', event => {
+  const btn = event.target.closest('button[data-angle]');
+  if (!btn || !studioState.group) return;
+  const ang = btn.dataset.angle;
+  const targetItem = studioState.group.angles[ang];
+  if (!targetItem) return;
+  studioState.item = targetItem;
+  studioState.angle = ang;
+  updateStudioPoseCard();
+});
+
+// 从图库更换姿势
+$('#studioChangePoseBtn').addEventListener('click', () => {
+  closeStudio();
+  // 滚动至列表顶部以供选择
+  window.scrollTo({ top: 380, behavior: 'smooth' });
+});
+
+// 渲染预设服装卡片
+function renderPresetGarments() {
+  $('#garmentPresetGrid').innerHTML = PRESET_GARMENTS.map(g => `
+    <div class="garment-preset-card" data-gid="${esc(g.id)}" title="${esc(g.name)}">
+      <img src="${esc(g.file)}" alt="${esc(g.name)}" loading="lazy">
+      <span class="garment-preset-title">${esc(g.name)}</span>
+    </div>
+  `).join('');
+}
+
+async function selectPresetGarment(gid) {
+  const g = PRESET_GARMENTS.find(item => item.id === gid);
+  if (!g) return;
+
+  try {
+    const b64 = await urlToBase64(g.file);
+    studioState.garmentBase64 = b64;
+    studioState.garmentName = g.name;
+    studioState.garmentSource = '预设服装推荐';
+
+    document.querySelectorAll('.garment-preset-card').forEach(c => {
+      c.classList.toggle('on', c.dataset.gid === gid);
+    });
+
+    showSelectedGarmentBar(g.file, g.name, '预设推荐款');
+  } catch (err) {
+    console.error('加载预设服装失败:', err);
+  }
+}
+
+function showSelectedGarmentBar(thumbUrl, name, source) {
+  const bar = $('#selectedGarmentBar');
+  bar.hidden = false;
+  $('#selectedGarmentImg').src = thumbUrl;
+  $('#selectedGarmentName').textContent = name;
+  $('#selectedGarmentSource').textContent = source;
+}
+
+function removeSelectedGarment() {
+  studioState.garmentBase64 = '';
+  studioState.garmentName = '';
+  studioState.garmentSource = '';
+  $('#selectedGarmentBar').hidden = true;
+  document.querySelectorAll('.garment-preset-card').forEach(c => c.classList.remove('on'));
+}
+
+$('#removeGarmentBtn').addEventListener('click', removeSelectedGarment);
+
+// 预设卡片点击
+$('#garmentPresetGrid').addEventListener('click', event => {
+  const card = event.target.closest('.garment-preset-card');
+  if (!card) return;
+  selectPresetGarment(card.dataset.gid);
+});
+
+// 服装 Tab 切换
+document.querySelectorAll('.garment-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.garment-tab').forEach(t => t.classList.remove('on'));
+    tab.classList.add('on');
+    const target = tab.dataset.gtab;
+    $('#garmentPresetPane').classList.toggle('on', target === 'preset');
+    $('#garmentUploadPane').classList.toggle('on', target === 'upload');
+    $('#garmentUrlPane').classList.toggle('on', target === 'url');
+  });
+});
+
+// 本地图片上传
+const dropzone = $('#garmentDropzone');
+const fileInput = $('#garmentFileInput');
+
+dropzone.addEventListener('click', () => fileInput.click());
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropzone.classList.remove('dragover');
+  if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+    handleGarmentFile(e.dataTransfer.files[0]);
+  }
+});
+fileInput.addEventListener('change', () => {
+  if (fileInput.files && fileInput.files[0]) {
+    handleGarmentFile(fileInput.files[0]);
+  }
+});
+
+function handleGarmentFile(file) {
+  const isImageMime = file.type && file.type.startsWith('image/');
+  const isImageExt = /\.(jpe?g|png|webp)$/i.test(file.name);
+  if (!isImageMime && !isImageExt) {
+    alert('请选择有效的图片文件 (PNG / JPG / WEBP)');
+    return;
+  }
+  let targetType = file.type;
+  if (!targetType || targetType === 'application/octet-stream' || targetType === 'image/jpg') {
+    const nameLower = file.name.toLowerCase();
+    if (nameLower.endsWith('.webp')) targetType = 'image/webp';
+    else if (nameLower.endsWith('.png')) targetType = 'image/png';
+    else if (nameLower.endsWith('.jpg') || nameLower.endsWith('.jpeg')) targetType = 'image/jpeg';
+    else targetType = 'image/png';
+  }
+  const blobToRead = (targetType && targetType !== file.type) ? new Blob([file], { type: targetType }) : file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const dataUrl = e.target.result;
+    studioState.garmentBase64 = dataUrl;
+    studioState.garmentName = file.name;
+    studioState.garmentSource = '本地上传';
+    showSelectedGarmentBar(dataUrl, file.name, '本地素材');
+    document.querySelectorAll('.garment-preset-card').forEach(c => c.classList.remove('on'));
+  };
+  reader.readAsDataURL(blobToRead);
+}
+
+// 网络图片链接载入
+$('#loadGarmentUrlBtn').addEventListener('click', async () => {
+  const url = $('#garmentUrlInput').value.trim();
+  if (!url) return;
+  const btn = $('#loadGarmentUrlBtn');
+  btn.textContent = '载入中…';
+  try {
+    const b64 = await urlToBase64(url);
+    studioState.garmentBase64 = b64;
+    studioState.garmentName = '网络服装图片';
+    studioState.garmentSource = url;
+    showSelectedGarmentBar(b64, '网络图片素材', 'URL 直链');
+    document.querySelectorAll('.garment-preset-card').forEach(c => c.classList.remove('on'));
+  } catch (err) {
+    alert('载入网络图片失败，可能存在跨域拦截，建议保存到本地后上传。');
+  } finally {
+    btn.textContent = '载入图片';
+  }
+});
+
+// 执行生成
+$('#studioGenerateBtn').addEventListener('click', async () => {
+  if (studioState.isGenerating) return;
+
+  $('#studioErrorMsg').hidden = true;
+  if (!studioState.item) {
+    $('#studioErrorMsg').textContent = '请先选定姿势参考底图';
+    $('#studioErrorMsg').hidden = false;
+    return;
+  }
+  if (!studioState.garmentBase64) {
+    $('#studioErrorMsg').textContent = '请先选择或上传一套搭配服装';
+    $('#studioErrorMsg').hidden = false;
+    return;
+  }
+
+  studioState.isGenerating = true;
+  $('#studioGenerateBtn').disabled = true;
+  $('#studioEmptyState').hidden = true;
+  $('#studioResultState').hidden = true;
+  $('#studioHistoryPane').hidden = true;
+  $('#studioLoadingState').hidden = false;
+
+  const model = $('#studioModelSelect').value;
+  const size = $('#studioSizeSelect').value;
+  const lang = $('#studioLangSelect').value;
+
+  studioState.startTime = Date.now();
+  $('#studioElapsed').textContent = '0.0';
+
+  const loadingTitles = [
+    '正在解析人体姿态骨架…',
+    '正在提取服装剪裁与面料纹理…',
+    '正在多模态融合受力与自然褶皱…',
+    '正在渲染超高分辨率商业光影与细节…'
+  ];
+  let titleIndex = 0;
+  $('#studioLoadingTitle').textContent = loadingTitles[0];
+
+  studioState.timerId = setInterval(() => {
+    const elapsedSec = ((Date.now() - studioState.startTime) / 1000).toFixed(1);
+    $('#studioElapsed').textContent = elapsedSec;
+    if (elapsedSec > 3 && titleIndex === 0) {
+      titleIndex = 1;
+      $('#studioLoadingTitle').textContent = loadingTitles[1];
+    } else if (elapsedSec > 7 && titleIndex === 1) {
+      titleIndex = 2;
+      $('#studioLoadingTitle').textContent = loadingTitles[2];
+    } else if (elapsedSec > 12 && titleIndex === 2) {
+      titleIndex = 3;
+      $('#studioLoadingTitle').textContent = loadingTitles[3];
+    }
+  }, 100);
+
+  try {
+    const resData = await executeStudioGenerate(studioState.item.原图, studioState.garmentBase64, {
+      model,
+      size,
+      lang
+    });
+
+    clearInterval(studioState.timerId);
+    const duration = ((Date.now() - studioState.startTime) / 1000).toFixed(1);
+
+    // 格式化 Base64
+    const mime = resData.mime || 'image/png';
+    const imgSrc = resData.image.startsWith('data:') ? resData.image : `data:${mime};base64,${resData.image}`;
+
+    studioState.lastResult = {
+      image: imgSrc,
+      mime,
+      model: resData.model || model,
+      prompt: resData.prompt || '',
+      duration
+    };
+
+    // 保存至本地 IndexedDB
+    const record = {
+      id: Date.now(),
+      poseId: studioState.item.id,
+      poseName: studioState.group.name,
+      angle: studioState.item.角度,
+      poseThumb: studioState.item.缩略图,
+      resultImage: imgSrc,
+      prompt: resData.prompt || '',
+      model: resData.model || model,
+      duration,
+      timestamp: new Date().toLocaleString('zh-CN')
+    };
+    await PoseDB.add(record);
+    refreshHistoryBadge();
+
+    // 渲染结果
+    $('#resultModelBadge').textContent = resData.model || model;
+    $('#resultTimeBadge').textContent = `耗时 ${duration}s · ${size}`;
+    $('#studioResultImg').src = imgSrc;
+    $('#downloadResultBtn').href = imgSrc;
+    $('#downloadResultBtn').setAttribute('download', `pose-${studioState.item.id}-${Date.now()}.png`);
+
+    if (resData.prompt) {
+      $('#resultPromptText').textContent = resData.prompt;
+      $('#resultPromptDetails').hidden = false;
+    } else {
+      $('#resultPromptDetails').hidden = true;
+    }
+
+    $('#studioLoadingState').hidden = true;
+    $('#studioResultState').hidden = false;
+  } catch (err) {
+    clearInterval(studioState.timerId);
+    $('#studioLoadingState').hidden = true;
+    $('#studioEmptyState').hidden = false;
+    $('#studioErrorMsg').textContent = `生图失败: ${err.message || err}`;
+    $('#studioErrorMsg').hidden = false;
+  } finally {
+    studioState.isGenerating = false;
+    $('#studioGenerateBtn').disabled = false;
+  }
+});
+
+// 复制 Prompt
+$('#copyPromptBtn').addEventListener('click', async () => {
+  if (!studioState.lastResult?.prompt) return;
+  try {
+    await navigator.clipboard.writeText(studioState.lastResult.prompt);
+    $('#copyPromptBtn').querySelector('span').textContent = '已复制 Prompt！';
+    setTimeout(() => {
+      $('#copyPromptBtn').querySelector('span').textContent = '复制生成 Prompt';
+    }, 2000);
+  } catch {
+    alert('复制失败，请手动在下方框中复制');
+  }
+});
+
+// 新标签页打开结果
+$('#openResultNewTabBtn').addEventListener('click', () => {
+  if (!studioState.lastResult?.image) return;
+  const w = window.open('');
+  w.document.write(`<title>AI Studio 试穿大图</title><style>body{margin:0;background:#0e1117;display:grid;place-items:center;min-height:100vh}img{max-width:98vw;max-height:98vh;object-fit:contain;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.6)}</style><img src="${studioState.lastResult.image}">`);
+});
+
+// 历史记录面板
+$('#studioHistoryToggle').addEventListener('click', async () => {
+  const pane = $('#studioHistoryPane');
+  if (!pane.hidden) {
+    pane.hidden = true;
+    return;
+  }
+  await renderHistoryList();
+  pane.hidden = false;
+});
+$('#closeHistoryPaneBtn').addEventListener('click', () => {
+  $('#studioHistoryPane').hidden = true;
+});
+
+async function renderHistoryList() {
+  const list = await PoseDB.getAll();
+  const container = $('#studioHistoryList');
+  if (!list.length) {
+    container.innerHTML = '<p class="history-empty">暂无历史生成记录</p>';
+    return;
+  }
+  container.innerHTML = list.map(item => `
+    <div class="history-item-card" data-hid="${item.id}">
+      <button type="button" class="history-item-delete" title="删除该条记录" data-delid="${item.id}">✕</button>
+      <div class="history-item-thumb" data-viewimg="${item.id}">
+        <img src="${item.resultImage}" alt="${esc(item.poseName)}">
+      </div>
+      <div class="history-item-meta">
+        <strong>${esc(item.poseName)} · ${esc(item.angle)}</strong>
+        <span>${esc(item.timestamp)}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+$('#studioHistoryList').addEventListener('click', async event => {
+  const delBtn = event.target.closest('[data-delid]');
+  if (delBtn) {
+    event.stopPropagation();
+    const id = Number(delBtn.dataset.delid);
+    await PoseDB.delete(id);
+    await renderHistoryList();
+    refreshHistoryBadge();
+    return;
+  }
+  const thumb = event.target.closest('[data-viewimg]');
+  if (thumb) {
+    const id = Number(thumb.dataset.viewimg);
+    const list = await PoseDB.getAll();
+    const item = list.find(r => r.id === id);
+    if (item) {
+      studioState.lastResult = {
+        image: item.resultImage,
+        mime: 'image/png',
+        model: item.model,
+        prompt: item.prompt,
+        duration: item.duration || '0'
+      };
+      $('#resultModelBadge').textContent = item.model || 'AI';
+      $('#resultTimeBadge').textContent = `生成于 ${item.timestamp}`;
+      $('#studioResultImg').src = item.resultImage;
+      $('#downloadResultBtn').href = item.resultImage;
+      if (item.prompt) {
+        $('#resultPromptText').textContent = item.prompt;
+        $('#resultPromptDetails').hidden = false;
+      } else {
+        $('#resultPromptDetails').hidden = true;
+      }
+      $('#studioHistoryPane').hidden = true;
+      $('#studioEmptyState').hidden = true;
+      $('#studioLoadingState').hidden = true;
+      $('#studioResultState').hidden = false;
+    }
+  }
+});
+
+$('#clearAllHistoryBtn').addEventListener('click', async () => {
+  if (!confirm('确定要清空本地所有历史生成记录吗？')) return;
+  await PoseDB.clear();
+  await renderHistoryList();
+  refreshHistoryBadge();
+});
+
+// 设置中心模态框
+function openSettings() {
+  const cfg = getSettings();
+  $('#cfgBackendUrl').value = cfg.backendUrl || 'http://127.0.0.1:8000';
+  $('#cfgBackendToken').value = cfg.backendToken || '';
+  $('#cfgUseCustom').checked = !!cfg.useCustom;
+  $('#settingsCustomFields').disabled = !cfg.useCustom;
+  $('#cfgProvider').value = cfg.provider || 'gemini';
+  $('#cfgBaseUrl').value = cfg.baseUrl || '';
+  $('#cfgApiKey').value = cfg.apiKey || '';
+  $('#cfgRealModel').value = cfg.realModel || '';
+  $('#settingsStatusMsg').textContent = '';
+  $('#comfyStatusMsg').hidden = true;
+  $('#settingsModal').hidden = false;
+}
+
+function closeSettings() {
+  $('#settingsModal').hidden = true;
+}
+
+$('#openSettingsBtn').addEventListener('click', openSettings);
+$('#studioQuickSettingsBtn').addEventListener('click', openSettings);
+$('#editChannelConfigLink').addEventListener('click', e => { e.preventDefault(); openSettings(); });
+$('#settingsCloseBtn').addEventListener('click', closeSettings);
+$('#cancelSettingsBtn').addEventListener('click', closeSettings);
+$('#settingsModal').addEventListener('click', event => { if (event.target === $('#settingsModal')) closeSettings(); });
+$('#studioDrawer').addEventListener('click', event => { if (event.target === $('#studioDrawer')) closeStudio(); });
+
+// 密码框显示/隐藏
+$('#toggleTokenVisibility').addEventListener('click', () => {
+  const input = $('#cfgBackendToken');
+  const isPwd = input.type === 'password';
+  input.type = isPwd ? 'text' : 'password';
+  $('#toggleTokenVisibility').textContent = isPwd ? '隐藏' : '显示';
+});
+$('#toggleKeyVisibility').addEventListener('click', () => {
+  const input = $('#cfgApiKey');
+  const isPwd = input.type === 'password';
+  input.type = isPwd ? 'text' : 'password';
+  $('#toggleKeyVisibility').textContent = isPwd ? '隐藏' : '显示';
+});
+
+// 自定义配置复选框
+$('#cfgUseCustom').addEventListener('change', event => {
+  $('#settingsCustomFields').disabled = !event.target.checked;
+});
+
+// 切换 Provider 给出合理默认值提示
+$('#cfgProvider').addEventListener('change', event => {
+  const prov = event.target.value;
+  if (prov === 'gemini') {
+    $('#cfgBaseUrl').placeholder = 'https://generativelanguage.googleapis.com/v1beta';
+    $('#cfgRealModel').placeholder = 'gemini-3.1-flash-image';
+  } else if (prov === 'openai') {
+    $('#cfgBaseUrl').placeholder = 'https://api.openai.com/v1';
+    $('#cfgRealModel').placeholder = 'gpt-image-2';
+  } else if (prov === 'doubao') {
+    $('#cfgBaseUrl').placeholder = 'https://ark.cn-beijing.volces.com/api/v3';
+    $('#cfgRealModel').placeholder = 'doubao-seedream-3-0-t2i-250415';
+  } else if (prov === 'comfyui') {
+    $('#cfgBaseUrl').placeholder = 'http://127.0.0.1:8188';
+    $('#cfgRealModel').placeholder = 'qwen-image-edit-2511';
+  }
+});
+
+// ComfyUI 连通性测试
+$('#testComfyBtn').addEventListener('click', async () => {
+  const backendUrl = ($('#cfgBackendUrl').value.trim() || 'http://127.0.0.1:8000').replace(/\/+$/, '');
+  const msgBox = $('#comfyStatusMsg');
+  msgBox.className = 'comfy-status-msg';
+  msgBox.textContent = '正在检测 ComfyUI 连接状态…';
+  msgBox.hidden = false;
+
+  try {
+    const res = await fetch(`${backendUrl}/comfyui/health`, { method: 'GET' });
+    const data = await res.json();
+    if (data.code === 0 && data.data && data.data.available) {
+      msgBox.className = 'comfy-status-msg ok';
+      msgBox.textContent = `✅ 连接成功！ComfyUI 就绪，工作流模型：${data.data.model || '已加载'}`;
+    } else {
+      msgBox.className = 'comfy-status-msg err';
+      msgBox.textContent = `⚠️ 未就绪：${data.message || (data.data && data.data.message) || '请确认本地 8188 端口已启动'}`;
+    }
+  } catch (err) {
+    msgBox.className = 'comfy-status-msg err';
+    msgBox.textContent = `❌ 连接后端服务失败 (${err.message})，请确认后端已在 :8000 监听`;
+  }
+});
+
+// 保存设置
+$('#saveSettingsBtn').addEventListener('click', () => {
+  const newCfg = {
+    backendUrl: $('#cfgBackendUrl').value.trim() || 'http://127.0.0.1:8000',
+    backendToken: $('#cfgBackendToken').value.trim(),
+    useCustom: $('#cfgUseCustom').checked,
+    provider: $('#cfgProvider').value,
+    baseUrl: $('#cfgBaseUrl').value.trim(),
+    apiKey: $('#cfgApiKey').value.trim(),
+    realModel: $('#cfgRealModel').value.trim()
+  };
+  saveSettings(newCfg);
+  const msg = $('#settingsStatusMsg');
+  msg.className = 'settings-status-msg ok';
+  msg.textContent = '设置已保存！';
+  setTimeout(() => {
+    closeSettings();
+  }, 600);
+});
+
+// 恢复默认
+$('#resetSettingsBtn').addEventListener('click', () => {
+  if (!confirm('确定恢复为默认配置吗？')) return;
+  saveSettings(DEFAULT_SETTINGS);
+  openSettings();
+});
+
+// 顶部打开工坊
+$('#openStudioBtn').addEventListener('click', () => {
+  openStudioWithPose(studioState.group, studioState.item);
+});
+$('#studioClose').addEventListener('click', closeStudio);
+
+// 灯箱 CTA 按钮：以当前姿势生图 / 试衣
+$('#viewerUsePoseBtn').addEventListener('click', () => {
+  const entry = currentList[viewerState.index];
+  if (!entry) return;
+  const item = viewerState.item || entry.item;
+  closeViewer();
+  openStudioWithPose(entry.group, item);
+});
+
+// 初始化预设服装与状态
+renderPresetGarments();
+updateChannelStatusNotice();
+refreshHistoryBadge();
 
 fetch('data/pose-zh.json')
   .then(response => { if (!response.ok) throw new Error(`HTTP ${response.status}`); return response.json(); })
